@@ -1,4 +1,5 @@
 #include "CPlayer.h"
+#include "Components/InputComponent.h"
 #include "GameFramework/SpringArmComponent.h"
 #include "Camera/CameraComponent.h"
 
