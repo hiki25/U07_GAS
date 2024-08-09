@@ -1,4 +1,5 @@
 #include "CPlayer.h"
+#include "Engine.h"
 #include "Components/InputComponent.h"
 #include "Components/SkeletalMeshComponent.h"
 #include "GameFramework/CharacterMovementComponent.h"
@@ -21,6 +22,8 @@ ACPlayer::ACPlayer()
 
 	GetCharacterMovement()->bOrientRotationToMovement = true;
 	bUseControllerRotationYaw = false;
+
+	AttackDelay = 0.2f;
 }
 
 void ACPlayer::BeginPlay()
@@ -66,12 +69,25 @@ void ACPlayer::MoveRight(float Value)
 
 void ACPlayer::PrimaryAction()
 {
+	if (AttackMontage)
+	{
+		PlayAnimMontage(AttackMontage);
+	}
+
+	GetWorldTimerManager().SetTimer(TimerHandle_PrimaryAction,this, &ACPlayer::PrimaryAction_TimeElapsed, 0.2f);
+
+	
+}
+
+void ACPlayer::PrimaryAction_TimeElapsed()
+{
 	FVector HandLoc = GetMesh()->GetSocketLocation("Muzzle_01");
 
-	FTransform SpawnTM(GetControlRotation(),HandLoc); 
+	FTransform SpawnTM(GetControlRotation(), HandLoc);
 
 	FActorSpawnParameters SpawnParams;
 	SpawnParams.SpawnCollisionHandlingOverride = ESpawnActorCollisionHandlingMethod::AlwaysSpawn;
+	SpawnParams.Instigator = this;
 
 	if (ensure(MagicBallClass))
 	{

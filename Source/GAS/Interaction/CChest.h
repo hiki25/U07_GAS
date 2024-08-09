@@ -20,14 +20,16 @@ public:
 	void Interact_Implementation(APawn* InstigatorPawn) override;
 
 public:
-	UPROPERTY(EditAnywhere)
+	UPROPERTY(BlueprintReadOnly, EditAnywhere)
 		float MaxPitch;
 
-private:
+
+protected:
 	UPROPERTY(VisibleDefaultsOnly, Category = "Component")
 		UStaticMeshComponent* BaseMesh;
-	UPROPERTY(VisibleDefaultsOnly, Category = "Component")
+	UPROPERTY(BlueprintReadOnly, VisibleDefaultsOnly, Category = "Component")
 		UStaticMeshComponent* LidMesh;
+	
 
 
 };
