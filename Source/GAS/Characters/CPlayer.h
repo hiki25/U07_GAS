@@ -8,6 +8,7 @@ class USpringArmComponent;
 class UCameraComponent;
 class UCInteractionComponent;
 class UAnimMontage;
+class UCAttributeComponent;
 
 UCLASS()
 class GAS_API ACPlayer : public ACharacter
@@ -38,6 +39,9 @@ protected:
 	UPROPERTY(VisibleDefaultsOnly, Category = "Components")
 	UCInteractionComponent* InteractionComp;
 
+	UPROPERTY(BlueprintReadOnly, VisibleDefaultsOnly, Category = "Components")
+	UCAttributeComponent* AttributeComp;
+
 
 protected:
 	UPROPERTY(EditAnywhere, Category = "Action")
@@ -48,7 +52,7 @@ protected:
 
 	UPROPERTY(EditAnywhere, Category = "Action")
 	UAnimMontage* AttackMontage;
-	
+
 private:
 	FTimerHandle TimerHandle_PrimaryAction;
 };

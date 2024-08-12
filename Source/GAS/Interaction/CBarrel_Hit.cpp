@@ -32,8 +32,6 @@ void ACBarrel_Hit::OnActorHit(UPrimitiveComponent* HitComponent, AActor* OtherAc
 
 	if (ensure(Explosion))
 	{
-
-
 	FVector Location = GetActorLocation();
 	Location.Z += 100.f;
 

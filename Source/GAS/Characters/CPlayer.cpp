@@ -2,6 +2,7 @@
 #include "Engine.h"
 #include "Components/InputComponent.h"
 #include "Components/SkeletalMeshComponent.h"
+#include "Components/CAttributeComponent.h"
 #include "GameFramework/CharacterMovementComponent.h"
 #include "GameFramework/SpringArmComponent.h"
 #include "Camera/CameraComponent.h"
@@ -11,7 +12,9 @@ ACPlayer::ACPlayer()
 {
 	SpringArmComp = CreateDefaultSubobject<USpringArmComponent>("SpringArmComp");
 	CameraComp = CreateDefaultSubobject<UCameraComponent>("CameraComp");
+
 	InteractionComp = CreateDefaultSubobject<UCInteractionComponent>("InteractionComp");
+	AttributeComp = CreateDefaultSubobject<UCAttributeComponent>("AttributeComp");
 
 	//Component Attach
 	SpringArmComp->SetupAttachment(RootComponent);
@@ -81,16 +84,15 @@ void ACPlayer::PrimaryAction()
 
 void ACPlayer::PrimaryAction_TimeElapsed()
 {
-	FVector HandLoc = GetMesh()->GetSocketLocation("Muzzle_01");
-
-	FTransform SpawnTM(GetControlRotation(), HandLoc);
-
-	FActorSpawnParameters SpawnParams;
-	SpawnParams.SpawnCollisionHandlingOverride = ESpawnActorCollisionHandlingMethod::AlwaysSpawn;
-	SpawnParams.Instigator = this;
-
 	if (ensure(MagicBallClass))
 	{
+		FVector HandLoc = GetMesh()->GetSocketLocation("Muzzle_01");
+		FTransform SpawnTM(GetControlRotation(), HandLoc);
+
+		FActorSpawnParameters SpawnParams;
+		SpawnParams.SpawnCollisionHandlingOverride = ESpawnActorCollisionHandlingMethod::AlwaysSpawn;
+		SpawnParams.Instigator = this;
+
 		GetWorld()->SpawnActor<AActor>(MagicBallClass, SpawnTM, SpawnParams);
 	}
 }
