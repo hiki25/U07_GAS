@@ -14,7 +14,7 @@ void ACTargetDummy::BeginPlay()
 {
 	Super::BeginPlay();
 	
-	AttributeComp->OnOnHealthChanged.AddDynamic(this, &ACTargetDummy::OnHealthChanged);
+	AttributeComp->OnHealthChanged.AddDynamic(this, &ACTargetDummy::OnHealthChanged);
 
 }
 

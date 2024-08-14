@@ -16,12 +16,17 @@ bool UCAttributeComponent::ApplyHealthChange(float Delta)
 {
 	Health += Delta;
 
-	if (OnOnHealthChanged.IsBound())
+	if (OnHealthChanged.IsBound())
 	{
-		OnOnHealthChanged.Broadcast(nullptr,this, Health, Delta);
+		OnHealthChanged.Broadcast(nullptr,this, Health, Delta);
 	}
 
 	return true;
+}
+
+bool UCAttributeComponent::IsAlive() const
+{
+	return Health> 0.f;
 }
 
 

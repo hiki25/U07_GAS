@@ -15,7 +15,8 @@ public class GAS : ModuleRules
 			"Core", 
 			"CoreUObject",
 			"Engine",
-			"InputCore"
+			"InputCore",
+			"GameplayTasks"
 		});
 
 
