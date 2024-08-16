@@ -1,34 +1,31 @@
-// Fill out your copyright notice in the Description page of Project Settings.
-
-
 #include "CBot.h"
+#include "Perception/PawnSensingComponent.h"
+#include "AIController.h"
+#include "BehaviorTree/BlackboardComponent.h"
+#include "DrawDebugHelpers.h"
 
-// Sets default values
 ACBot::ACBot()
 {
- 	// Set this character to call Tick() every frame.  You can turn this off to improve performance if you don't need it.
-	PrimaryActorTick.bCanEverTick = true;
-
+	PawnSensingComp = CreateDefaultSubobject<UPawnSensingComponent>("PawnSensinComp");
 }
 
-// Called when the game starts or when spawned
-void ACBot::BeginPlay()
+void ACBot::PostInitializeComponents()
 {
-	Super::BeginPlay();
+	Super::PostInitializeComponents();
 	
+	PawnSensingComp->OnSeePawn.AddDynamic(this,&ACBot::OnSeePawn);
+
 }
 
-// Called every frame
-void ACBot::Tick(float DeltaTime)
+void ACBot::OnSeePawn(APawn* Pawn)
 {
-	Super::Tick(DeltaTime);
+	 AAIController* AIC = Cast<AAIController>(GetController());
+	 if (ensure(AIC))
+	 {
+		UBlackboardComponent* BBComp = AIC->GetBlackboardComponent();
+		BBComp->SetValueAsObject("TargetActor",Pawn);
 
+		DrawDebugString(GetWorld(), GetActorLocation(), "Gat Cha",nullptr,FColor::Black,3.f,true);;
+	
+	 }
 }
-
-// Called to bind functionality to input
-void ACBot::SetupPlayerInputComponent(UInputComponent* PlayerInputComponent)
-{
-	Super::SetupPlayerInputComponent(PlayerInputComponent);
-
-}
-
