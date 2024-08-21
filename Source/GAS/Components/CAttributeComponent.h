@@ -17,6 +17,7 @@ public:
 protected:
 	virtual void BeginPlay() override;
 
+
 public:
 	//체력에 대한 변화량
 	UFUNCTION(BlueprintCallable, Category = "Attribute")
@@ -25,13 +26,21 @@ public:
 	UFUNCTION(BlueprintCallable, Category = "Attribute")
 		bool IsAlive() const;
 
+	UFUNCTION(BlueprintCallable, Category = "Attribute")
+	bool IsFullHealth() const;
+
+	UFUNCTION(BlueprintCallable, Category = "Attribute")
+	float GetMaxHealth() const;
+
 public:
 	UPROPERTY(BlueprintAssignable)
 	FOnHealthChanged OnHealthChanged;
 
 protected:
 	UPROPERTY(BlueprintReadOnly, EditDefaultsOnly, Category = "Attribute")
-		float Health;
+	float Health;
 
+	UPROPERTY(BlueprintReadOnly, EditDefaultsOnly, Category = "Attribute")
+	float MaxHealth;
 		
 };

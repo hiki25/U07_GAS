@@ -1,5 +1,6 @@
 #include "CPlayer.h"
 #include "Engine.h"
+#include "Kismet/GameplayStatics.h"
 #include "Components/InputComponent.h"
 #include "Components/SkeletalMeshComponent.h"
 #include "Components/CAttributeComponent.h"
@@ -27,6 +28,8 @@ ACPlayer::ACPlayer()
 	bUseControllerRotationYaw = false;
 
 	AttackDelay = 0.2f;
+	HandSocketName = "Muzzle_01";
+	TimeToHitParamName = "TimeToHit";
 }
 
 void ACPlayer::PostInitializeComponents()
@@ -58,6 +61,11 @@ void ACPlayer::SetupPlayerInputComponent(UInputComponent* PlayerInputComponent)
 
 void ACPlayer::OnHealthChanged(AActor* InstigatorActor, UCAttributeComponent* OwningComp, float NewHealth, float Delta)
 {
+	if (Delta < 0.f)
+	{
+		GetMesh()->SetScalarParameterValueOnMaterials(TimeToHitParamName, GetWorld()->TimeSeconds);
+	}
+
 	if (NewHealth <= 0.f && Delta < 0.f)
 	{
 		APlayerController* PC = GetController<APlayerController>();
@@ -85,14 +93,8 @@ void ACPlayer::MoveRight(float Value)
 
 void ACPlayer::PrimaryAction()
 {
-	if (AttackMontage)
-	{
-		PlayAnimMontage(AttackMontage);
-	}
-
+	PlayActtackAction();
 	GetWorldTimerManager().SetTimer(TimerHandle_PrimaryAction,this, &ACPlayer::PrimaryAction_TimeElapsed, 0.2f);
-
-	
 }
 
 void ACPlayer::PrimaryAction_TimeElapsed()
@@ -102,11 +104,7 @@ void ACPlayer::PrimaryAction_TimeElapsed()
 
 void ACPlayer::SecondaryAction()
 {
-	if (AttackMontage)
-	{
-		PlayAnimMontage(AttackMontage);
-	}
-
+	PlayActtackAction();
 	GetWorldTimerManager().SetTimer(TimerHandle_SecondartAction, this, &ACPlayer::SecondaryAction_TimeElapsed, 0.2f);
 }
 
@@ -117,11 +115,7 @@ void ACPlayer::SecondaryAction_TimeElapsed()
 
 void ACPlayer::ThirdAction()
 {
-	if (AttackMontage)
-	{
-		PlayAnimMontage(AttackMontage);
-	}
-
+	PlayActtackAction();
 	GetWorldTimerManager().SetTimer(TimerHandle_ThirdAction, this, &ACPlayer::ThirdAction_TimeElapsed, 0.2f);
 }
 
@@ -130,11 +124,24 @@ void ACPlayer::ThirdAction_TimeElapsed()
 	SpawnProjectile(BlackHoleClass);
 }
 
+void ACPlayer::PlayActtackAction()
+{
+	if (AttackMontage)
+	{
+		PlayAnimMontage(AttackMontage);
+	}
+
+	if (MuzzleParticle)
+	{
+		UGameplayStatics::SpawnEmitterAttached(MuzzleParticle,GetMesh(),HandSocketName,FVector::ZeroVector,FRotator::ZeroRotator,EAttachLocation::SnapToTarget);
+	}
+}
+
 void ACPlayer::SpawnProjectile(TSubclassOf<AActor> ClassToSpawn)
 {
 	if (ensure(ClassToSpawn))
 	{
-		FVector HandLoc = GetMesh()->GetSocketLocation("Muzzle_01");
+		FVector HandLoc = GetMesh()->GetSocketLocation(HandSocketName);
 
 		FActorSpawnParameters SpawnParams;
 		SpawnParams.SpawnCollisionHandlingOverride = ESpawnActorCollisionHandlingMethod::AlwaysSpawn;

@@ -8,6 +8,9 @@
 class USphereComponent;
 class UParticleSystemComponent;
 class UProjectileMovementComponent;
+class UAudioComponent;
+class USoundCue;
+class UCameraShake;
 
 UCLASS()
 class GAS_API ACprojectileBase : public AActor
@@ -31,6 +34,16 @@ protected:
 	UPROPERTY(BlueprintReadOnly, EditDefaultsOnly, Category = "Effects")
 		UParticleSystem* ImpactVFX;
 
+	UPROPERTY(EditDefaultsOnly, Category = "Effects")
+		USoundCue* ImpactSound;
+	UPROPERTY(EditDefaultsOnly, Category = "Effects | Shake")
+		TSubclassOf<UCameraShake> ImpactShake;
+
+	UPROPERTY(EditDefaultsOnly, Category = "Effects | Shake")
+		float ImpactShakeInnerRadius;
+	UPROPERTY(EditDefaultsOnly, Category = "Effects | Shake")
+		float ImpactShakeOuterRadius;
+
 	UPROPERTY(BlueprintReadOnly, VisibleDefaultsOnly, Category = "Component")
 		USphereComponent* SphereComp;
 
@@ -39,5 +52,11 @@ protected:
 
 	UPROPERTY(BlueprintReadOnly, VisibleDefaultsOnly, Category = "Component")
 		UProjectileMovementComponent* MoveComp;
+
+	UPROPERTY(BlueprintReadOnly, VisibleDefaultsOnly, Category = "Components")
+		UAudioComponent* AudioComp;
+
+
+	
 
 };

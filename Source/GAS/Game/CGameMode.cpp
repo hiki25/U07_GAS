@@ -3,6 +3,7 @@
 #include "EnvironmentQuery/EnvQueryManager.h"
 #include "Characters/CBot.h"
 #include "Components/CAttributeComponent.h"
+#include "DrawDebugHelpers.h"
 
 ACGameMode::ACGameMode()
 {
@@ -17,6 +18,33 @@ void ACGameMode::StartPlay()
 
 void ACGameMode::SpawnBotTimerElapsed()
 {
+	int32 NumOfAliveBots = 0;
+	for (TActorIterator<ACBot> It(GetWorld()); It; ++It)
+	{
+		ACBot* Bot = *It;
+
+		UCAttributeComponent* AttributeComp = Cast<UCAttributeComponent>(Bot->GetComponentByClass(UCAttributeComponent::StaticClass()));
+		if (ensure(AttributeComp) && AttributeComp->IsAlive())
+		{
+			NumOfAliveBots++;
+		}
+	}
+
+	UE_LOG(LogTemp, Log, TEXT("Found %i alive bots."), NumOfAliveBots);
+
+	float MaxBotCount = 10.f;
+	if (SpawnCurve)
+	{
+		MaxBotCount = SpawnCurve->GetFloatValue(GetWorld()->TimeSeconds);
+	}
+
+	if (NumOfAliveBots >= (int32)MaxBotCount)
+	{
+		UE_LOG(LogTemp, Log, TEXT("Reached Maximum bot count. Skipping spawn bot"));
+		return;
+	}
+
+
 	UEnvQueryInstanceBlueprintWrapper* QueryInstance = UEnvQueryManager::RunEQSQuery(this, SpawnBotEQS, this, EEnvQueryRunMode::RandomBest5Pct, nullptr);
 	if (ensure(QueryInstance))
 	{
@@ -32,29 +60,7 @@ void ACGameMode::OnQueryFinished(UEnvQueryInstanceBlueprintWrapper* QueryInstanc
 		return;
 	}
 
-	int32 NumOfAliveBots = 0;
-	for(TActorIterator<ACBot> It(GetWorld()); It; ++It)
-	{
-		ACBot* Bot = *It;
-
-		UCAttributeComponent* AttributeComp = Cast<UCAttributeComponent>(Bot->GetComponentByClass(UCAttributeComponent::StaticClass()));
-		if (ensure(AttributeComp) && AttributeComp->IsAlive())
-		{
-			NumOfAliveBots++;
-		}
-	}
-
-	float MaxBotCount = 10.f;
-	if (SpawnCurve)
-	{
-		MaxBotCount = SpawnCurve->GetFloatValue(GetWorld()->TimeSeconds);
-	}
-
-	if (NumOfAliveBots >= (int32)MaxBotCount)
-	{
-		return;
-	}
-
+	
 	TArray<FVector> Locations = QueryInstance->GetResultsAsLocations();
 
 	if (Locations.IsValidIndex(0))
@@ -66,6 +72,7 @@ void ACGameMode::OnQueryFinished(UEnvQueryInstanceBlueprintWrapper* QueryInstanc
 			return;
 		}
 		GetWorld()->SpawnActor<AActor>(BotClass, Locations[0],FRotator::ZeroRotator);
+		DrawDebugSphere(GetWorld(), Locations[0],50.f,20, FColor::Blue,false,60.f);
 	}
 
 }
