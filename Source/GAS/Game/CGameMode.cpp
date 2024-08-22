@@ -23,7 +23,7 @@ void ACGameMode::SpawnBotTimerElapsed()
 	{
 		ACBot* Bot = *It;
 
-		UCAttributeComponent* AttributeComp = Cast<UCAttributeComponent>(Bot->GetComponentByClass(UCAttributeComponent::StaticClass()));
+		UCAttributeComponent* AttributeComp = UCAttributeComponent::GetAttribute(Bot);
 		if (ensure(AttributeComp) && AttributeComp->IsAlive())
 		{
 			NumOfAliveBots++;

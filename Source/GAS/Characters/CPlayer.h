@@ -19,6 +19,9 @@ class GAS_API ACPlayer : public ACharacter
 public:
 	ACPlayer();
 
+	UFUNCTION(Exec)
+	void HealSelf(float Amount = 100);
+
 protected:
 	virtual void PostInitializeComponents() override;
 	virtual void SetupPlayerInputComponent(class UInputComponent* PlayerInputComponent) override;

@@ -2,6 +2,7 @@
 
 #include "CoreMinimal.h"
 #include "Components/ActorComponent.h"
+#include "Engine.h"
 #include "CAttributeComponent.generated.h"
 
 DECLARE_DYNAMIC_MULTICAST_DELEGATE_FourParams(FOnHealthChanged, AActor*, InstigatorActor, class UCAttributeComponent*, OwningComp,float, NewHealth ,float, Delta);
@@ -19,18 +20,25 @@ protected:
 
 
 public:
+	UFUNCTION(BlueprintCallable, Category = "Attribute")
+	static UCAttributeComponent* GetAttribute(AActor* FromActor);
+
+	UFUNCTION(BlueprintCallable, Category = "Attribute", meta = (DisplayName = "IsAlive"))
+		static bool IsActorAlive(AActor* Actor);
+
 	//체력에 대한 변화량
 	UFUNCTION(BlueprintCallable, Category = "Attribute")
-	bool ApplyHealthChange(float Delta);
+	bool ApplyHealthChange(AActor* Instigatorctor,float Delta);
 
 	UFUNCTION(BlueprintCallable, Category = "Attribute")
-		bool IsAlive() const;
+	bool IsAlive() const;
 
 	UFUNCTION(BlueprintCallable, Category = "Attribute")
 	bool IsFullHealth() const;
 
 	UFUNCTION(BlueprintCallable, Category = "Attribute")
 	float GetMaxHealth() const;
+
 
 public:
 	UPROPERTY(BlueprintAssignable)

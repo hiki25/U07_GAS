@@ -13,7 +13,28 @@ void UCAttributeComponent::BeginPlay()
 	
 }
 
-bool UCAttributeComponent::ApplyHealthChange(float Delta)
+UCAttributeComponent* UCAttributeComponent::GetAttribute(AActor* FromActor)
+{
+	if (FromActor)
+	{
+	return Cast<UCAttributeComponent>(FromActor->GetComponentByClass(UCAttributeComponent::StaticClass()));
+	}
+
+	return nullptr;
+}
+
+bool UCAttributeComponent::IsActorAlive(AActor* Actor)
+{
+	UCAttributeComponent* AttributeComp = GetAttribute(Actor);
+	if (AttributeComp)
+	{
+	return AttributeComp->IsAlive();
+
+	}
+	return false;
+}
+
+bool UCAttributeComponent::ApplyHealthChange(AActor* Instigatorctor,float Delta)
 {
 	float PrevHealth = Health;
 
@@ -23,7 +44,7 @@ bool UCAttributeComponent::ApplyHealthChange(float Delta)
 
 	if (OnHealthChanged.IsBound())
 	{
-		OnHealthChanged.Broadcast(nullptr,this, Health, ActualDelath);
+		OnHealthChanged.Broadcast(Instigatorctor,this, Health, ActualDelath);
 	}
 
 	return !FMath::IsNearlyZero(ActualDelath);

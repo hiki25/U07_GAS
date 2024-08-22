@@ -6,6 +6,7 @@
 
 class UPawnSensingComponent;
 class UCAttributeComponent;
+class UCWorldWidget;
 
 UCLASS()
 class GAS_API ACBot : public ACharacter
@@ -22,6 +23,10 @@ protected:
 	UFUNCTION()
 	void OnSeePawn(APawn* Pawn);
 
+	UFUNCTION()
+		void OnHealthChanged(AActor* InstigatorActor, UCAttributeComponent* OwningComp, float NewHealth, float Delta);
+
+	void SetTargetActor(AActor* NewTarget);
 protected:
 	UPROPERTY(VisibleDefaultsOnly, Category = "Component")
 	UPawnSensingComponent* PawnSensingComp;
@@ -29,4 +34,11 @@ protected:
 	UPROPERTY(BlueprintReadOnly, VisibleDefaultsOnly, Category = "Component")
 	UCAttributeComponent* AttributeComp;
 
+	UPROPERTY(EditDefaultsOnly, Category = "impact")
+	FName TimeToHitParamName;
+
+	UPROPERTY(EditDefaultsOnly, Category = "UI")
+	TSubclassOf<UCWorldWidget> HealthBarWidgetClass;
+
+	UCWorldWidget* HealthBarWidget;
 };

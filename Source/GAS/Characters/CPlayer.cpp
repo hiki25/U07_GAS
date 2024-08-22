@@ -32,6 +32,11 @@ ACPlayer::ACPlayer()
 	TimeToHitParamName = "TimeToHit";
 }
 
+void ACPlayer::HealSelf(float Amount)
+{
+	AttributeComp->ApplyHealthChange(this,Amount);
+}
+
 void ACPlayer::PostInitializeComponents()
 {
 	Super::PostInitializeComponents();
