@@ -1,4 +1,5 @@
 #include "CAttributeComponent.h"
+#include "Game/CGameMode.h"
 
 UCAttributeComponent::UCAttributeComponent()
 {
@@ -36,18 +37,32 @@ bool UCAttributeComponent::IsActorAlive(AActor* Actor)
 
 bool UCAttributeComponent::ApplyHealthChange(AActor* Instigatorctor,float Delta)
 {
+	if (!GetOwner()->CanBeDamaged() && Delta < 0.f)
+	{
+		return false;
+	}
+
 	float PrevHealth = Health;
 
 	Health = FMath::Clamp(Health += Delta, 0.f, MaxHealth);
 
-	float ActualDelath = Health - PrevHealth;
+	float ActualDelta = Health - PrevHealth;
 
 	if (OnHealthChanged.IsBound())
 	{
-		OnHealthChanged.Broadcast(Instigatorctor,this, Health, ActualDelath);
+		OnHealthChanged.Broadcast(Instigatorctor,this, Health, ActualDelta);
 	}
 
-	return !FMath::IsNearlyZero(ActualDelath);
+	if (ActualDelta < 0.f && Health <= 0.f)
+	{
+		ACGameMode* GM = GetWorld()->GetAuthGameMode<ACGameMode>();
+		if (ensure(GM))
+		{
+			GM->OnActorKilled(GetOwner(), Instigatorctor);
+		}
+	}
+
+	return !FMath::IsNearlyZero(ActualDelta);
 }
 
 bool UCAttributeComponent::IsAlive() const
@@ -60,9 +75,19 @@ bool UCAttributeComponent::IsFullHealth() const
 	return FMath::IsNearlyEqual(Health,MaxHealth);
 }
 
+float UCAttributeComponent::GetHealth() const
+{
+	return Health;
+}
+
 float UCAttributeComponent::GetMaxHealth() const
 {
 	return MaxHealth;
+}
+
+bool UCAttributeComponent::Kill(AActor* Killer)
+{
+	return ApplyHealthChange(Killer,-GetMaxHealth());
 }
 
 

@@ -2,6 +2,7 @@
 #include "EngineUtils.h"
 #include "EnvironmentQuery/EnvQueryManager.h"
 #include "Characters/CBot.h"
+#include "Characters/CPlayer.h"
 #include "Components/CAttributeComponent.h"
 #include "DrawDebugHelpers.h"
 
@@ -14,6 +15,44 @@ void ACGameMode::StartPlay()
 {
 	Super::StartPlay();
 	GetWorldTimerManager().SetTimer(TimerHandle_SpawnBot,this,&ACGameMode::SpawnBotTimerElapsed,SpawnTimerDelay,true);
+}
+
+void ACGameMode::KillAll()
+{
+	for (TActorIterator<ACBot> It(GetWorld()); It; ++It)
+	{
+		ACBot* Bot = *It;
+		UCAttributeComponent* AttributeComp = UCAttributeComponent::GetAttribute(Bot);
+		if (ensure(AttributeComp) && AttributeComp->IsAlive())
+		{
+			AttributeComp->Kill(this);
+		}
+	}
+}
+
+void ACGameMode::OnActorKilled(AActor* VictimActor, AActor* Killer)
+{
+	ACPlayer* Player = Cast<ACPlayer>(VictimActor);
+	if (Player)
+	{
+		FTimerHandle TimerHandle_RespawnDelay;
+		FTimerDelegate Delegate;
+		Delegate.BindUFunction(this,"ReSpawnPlayerElapsed",Player->GetController());
+
+		float RespawnDelay = 5.f;
+		GetWorldTimerManager().SetTimer(TimerHandle_RespawnDelay, Delegate, RespawnDelay, false);
+	}
+
+	UE_LOG(LogTemp, Log, TEXT("OnActorKilled, Victim : %s, Killer : %s"), *GetNameSafe(VictimActor), *GetNameSafe(Killer));
+}
+
+void ACGameMode::ReSpawnPlayerElapsed(AController* Controller)
+{
+	if (ensure(Controller))
+	{
+		Controller->UnPossess();
+		RestartPlayer(Controller);
+	}
 }
 
 void ACGameMode::SpawnBotTimerElapsed()

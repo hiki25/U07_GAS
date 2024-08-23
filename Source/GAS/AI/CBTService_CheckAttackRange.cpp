@@ -2,6 +2,11 @@
 #include "BehaviorTree/Blackboardcomponent.h"
 #include "AIController.h"
 
+UCBTService_CheckAttackRange::UCBTService_CheckAttackRange()
+{
+	AttackRange = 2000.f;
+}
+
 void UCBTService_CheckAttackRange::TickNode(UBehaviorTreeComponent& OwnerComp, uint8* NodeMemory, float DeltaSeconds)
 {
 	Super::TickNode(OwnerComp, NodeMemory, DeltaSeconds);
@@ -19,7 +24,7 @@ void UCBTService_CheckAttackRange::TickNode(UBehaviorTreeComponent& OwnerComp, u
 				if (ensure(BotPawn))
 				{
 					float Distance = FVector::Distance(TargetActor->GetActorLocation(),BotPawn->GetActorLocation());
-					bool bInRange = Distance < 2000.0f;
+					bool bInRange = Distance < AttackRange;
 
 					bool bLOS = false;
 					if (bInRange)

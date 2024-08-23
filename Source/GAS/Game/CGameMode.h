@@ -22,6 +22,12 @@ protected:
 	UFUNCTION(Exec)
 		void KillAll();
 
+	UFUNCTION()
+		void ReSpawnPlayerElapsed(AController* Controller);
+
+public:
+	virtual void OnActorKilled(AActor* VictimActor, AActor* Killer);
+
 	//Spawn Bots
 protected:
 	FTimerHandle TimerHandle_SpawnBot;

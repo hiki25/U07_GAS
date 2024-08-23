@@ -24,7 +24,8 @@ public:
 	static UCAttributeComponent* GetAttribute(AActor* FromActor);
 
 	UFUNCTION(BlueprintCallable, Category = "Attribute", meta = (DisplayName = "IsAlive"))
-		static bool IsActorAlive(AActor* Actor);
+	static bool IsActorAlive(AActor* Actor);
+
 
 	//체력에 대한 변화량
 	UFUNCTION(BlueprintCallable, Category = "Attribute")
@@ -39,6 +40,11 @@ public:
 	UFUNCTION(BlueprintCallable, Category = "Attribute")
 	float GetMaxHealth() const;
 
+	UFUNCTION(BlueprintCallable, Category = "Attribute")
+		float GetHealth() const;
+
+	UFUNCTION(BlueprintCallable, Category = "Cheat")
+	bool Kill(AActor* Killer);
 
 public:
 	UPROPERTY(BlueprintAssignable)
