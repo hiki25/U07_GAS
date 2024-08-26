@@ -1,6 +1,6 @@
 #include "CMagicBall.h"
 #include "Components/SphereComponent.h"
-#include "Components/CAttributeComponent.h"
+#include "Game/CFunctionLibrary.h"
 
 ACMagicBall::ACMagicBall()
 {
@@ -19,10 +19,8 @@ void ACMagicBall::OnActorOverlap(UPrimitiveComponent* OverlappedComponent, AActo
 {
 	if (OtherActor && OtherActor != GetInstigator())
 	{
-		UCAttributeComponent* AttributeComp = Cast<UCAttributeComponent>(OtherActor->GetComponentByClass(UCAttributeComponent::StaticClass()));
-		if (AttributeComp)
+		if (UCFunctionLibrary::ApplyDirectionDamage(GetInstigator(), OtherActor,DamageAmount, SweepResult))
 		{
-			AttributeComp->ApplyHealthChange(GetInstigator(),-DamageAmount);
 			Explode();
 		}
 	}

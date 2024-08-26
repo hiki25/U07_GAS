@@ -8,6 +8,7 @@
 #include "GameFramework/SpringArmComponent.h"
 #include "Camera/CameraComponent.h"
 #include "Components/CInteractionComponent.h"
+#include "Components/CActionComponent.h"
 
 ACPlayer::ACPlayer()
 {
@@ -16,6 +17,7 @@ ACPlayer::ACPlayer()
 
 	InteractionComp = CreateDefaultSubobject<UCInteractionComponent>("InteractionComp");
 	AttributeComp = CreateDefaultSubobject<UCAttributeComponent>("AttributeComp");
+	ActionComp = CreateDefaultSubobject<UCActionComponent>("ActionComp");
 
 	//Component Attach
 	SpringArmComp->SetupAttachment(RootComponent);
@@ -61,7 +63,14 @@ void ACPlayer::SetupPlayerInputComponent(UInputComponent* PlayerInputComponent)
 	PlayerInputComponent->BindAction("PrimaryInteraction",EInputEvent::IE_Pressed,this, &ACPlayer::PrimaryInteraction);
 	PlayerInputComponent->BindAction("SecondaryAction",EInputEvent::IE_Pressed,this, &ACPlayer::SecondaryAction);
 	PlayerInputComponent->BindAction("ThirdAction",EInputEvent::IE_Pressed,this, &ACPlayer::ThirdAction);
+	PlayerInputComponent->BindAction("Sprint",EInputEvent::IE_Pressed,this, &ACPlayer::StartSprint);
+	PlayerInputComponent->BindAction("Sprint",EInputEvent::IE_Released,this, &ACPlayer::StopSprint);
 
+}
+
+FVector ACPlayer::GetPawnViewLocation() const
+{
+	return CameraComp->GetComponentLocation();
 }
 
 void ACPlayer::OnHealthChanged(AActor* InstigatorActor, UCAttributeComponent* OwningComp, float NewHealth, float Delta)
@@ -187,4 +196,14 @@ void ACPlayer::PrimaryInteraction()
 	{
 		InteractionComp->PrimaryInteraction();
 	}
+}
+
+void ACPlayer::StartSprint()
+{
+	ActionComp->StartActionByName(this, "Sprint");
+}
+
+void ACPlayer::StopSprint()
+{
+	ActionComp->StopActionByName(this, "Sprint");
 }

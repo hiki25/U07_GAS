@@ -1,5 +1,7 @@
 #include "CBot.h"
 #include "Components/CAttributeComponent.h"
+#include "Components/CapsuleComponent.h"
+#include "GameFramework/CharacterMovementComponent.h"
 #include "Perception/PawnSensingComponent.h"
 #include "AIController.h"
 #include "BrainComponent.h"
@@ -13,6 +15,9 @@ ACBot::ACBot()
 	AttributeComp = CreateDefaultSubobject<UCAttributeComponent>("AttributeComp");
 
 	AutoPossessAI = EAutoPossessAI::PlacedInWorldOrSpawned;
+
+	GetCapsuleComponent()->SetCollisionResponseToChannel(ECC_WorldDynamic, ECR_Ignore);
+	GetMesh()->SetGenerateOverlapEvents(true);
 
 	TimeToHitParamName = "TimeToHit";
 }
@@ -57,6 +62,9 @@ void ACBot::OnHealthChanged(AActor* InstigatorActor, UCAttributeComponent* Ownin
 			}
 			GetMesh()->SetAllBodiesSimulatePhysics(true);
 			GetMesh()->SetCollisionProfileName("Ragdoll");
+
+			GetCapsuleComponent()->SetCollisionEnabled(ECollisionEnabled::NoCollision);
+			GetCharacterMovement()->DisableMovement();
 
 			SetLifeSpan(10.f);
 			return;

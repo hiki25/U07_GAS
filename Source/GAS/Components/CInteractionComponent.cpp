@@ -3,6 +3,8 @@
 #include "DrawDebugHelpers.h"
 #include "Game/CGameplayInterface.h"
 
+static TAutoConsoleVariable<bool> CVarDrawDebug(TEXT("Tore.DrawDebug"), false, TEXT("Enable DrawDebug for Interaction"));
+
 UCInteractionComponent::UCInteractionComponent()
 {
 }
@@ -16,6 +18,8 @@ void UCInteractionComponent::BeginPlay()
 
 void UCInteractionComponent::PrimaryInteraction()
 {
+	bool bDrawDebug = CVarDrawDebug.GetValueOnGameThread();
+
 	FCollisionObjectQueryParams ObjectQueryParams;
 	ObjectQueryParams.AddObjectTypesToQuery(ECC_WorldDynamic);
 
@@ -38,7 +42,10 @@ void UCInteractionComponent::PrimaryInteraction()
 
 	for (const auto& Hit : Hits)
 	{
+		if (bDrawDebug)
+		{
 		DrawDebugSphere(GetWorld(), Hit.ImpactPoint, Radius, 20, LineColor, false, 3.f);
+		}
 
 		AActor* HitActor = Hit.GetActor();
 
@@ -52,5 +59,8 @@ void UCInteractionComponent::PrimaryInteraction()
 		}
 
 	}
+	if (bDrawDebug)
+	{
 		DrawDebugLine(GetWorld(), EyeLocation, End, LineColor, false, 2.f, 0, 2.f);
+	}
 }

@@ -1,6 +1,8 @@
 #include "CAttributeComponent.h"
 #include "Game/CGameMode.h"
 
+TAutoConsoleVariable<float> CVarDamageMultiplier(TEXT("Tore.DamageMultiplier"), 1.f, TEXT("Modify damage Multiplier"), ECVF_Cheat);
+
 UCAttributeComponent::UCAttributeComponent()
 {
 	MaxHealth = 100.f;
@@ -40,6 +42,12 @@ bool UCAttributeComponent::ApplyHealthChange(AActor* Instigatorctor,float Delta)
 	if (!GetOwner()->CanBeDamaged() && Delta < 0.f)
 	{
 		return false;
+	}
+
+	if (Delta < 0.f)
+	{
+		float DamageMultiplier = CVarDamageMultiplier.GetValueOnGameThread();
+		Delta *= DamageMultiplier;
 	}
 
 	float PrevHealth = Health;
