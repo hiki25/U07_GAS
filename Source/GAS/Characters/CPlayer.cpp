@@ -28,9 +28,6 @@ ACPlayer::ACPlayer()
 
 	GetCharacterMovement()->bOrientRotationToMovement = true;
 	bUseControllerRotationYaw = false;
-
-	AttackDelay = 0.2f;
-	HandSocketName = "Muzzle_01";
 	TimeToHitParamName = "TimeToHit";
 }
 
@@ -107,88 +104,22 @@ void ACPlayer::MoveRight(float Value)
 
 void ACPlayer::PrimaryAction()
 {
-	PlayActtackAction();
-	GetWorldTimerManager().SetTimer(TimerHandle_PrimaryAction,this, &ACPlayer::PrimaryAction_TimeElapsed, 0.2f);
+	ActionComp->StartActionByName(this, "MagicBall");
 }
 
-void ACPlayer::PrimaryAction_TimeElapsed()
-{
-	SpawnProjectile(MagicBallClass);
-}
 
 void ACPlayer::SecondaryAction()
 {
-	PlayActtackAction();
-	GetWorldTimerManager().SetTimer(TimerHandle_SecondartAction, this, &ACPlayer::SecondaryAction_TimeElapsed, 0.2f);
+	ActionComp->StartActionByName(this, "WarpBall");
 }
 
-void ACPlayer::SecondaryAction_TimeElapsed()
-{
-	SpawnProjectile(WarpBallClass);
-}
 
 void ACPlayer::ThirdAction()
 {
-	PlayActtackAction();
-	GetWorldTimerManager().SetTimer(TimerHandle_ThirdAction, this, &ACPlayer::ThirdAction_TimeElapsed, 0.2f);
+	ActionComp->StartActionByName(this, "BlackHole");
 }
 
-void ACPlayer::ThirdAction_TimeElapsed()
-{
-	SpawnProjectile(BlackHoleClass);
-}
 
-void ACPlayer::PlayActtackAction()
-{
-	if (AttackMontage)
-	{
-		PlayAnimMontage(AttackMontage);
-	}
-
-	if (MuzzleParticle)
-	{
-		UGameplayStatics::SpawnEmitterAttached(MuzzleParticle,GetMesh(),HandSocketName,FVector::ZeroVector,FRotator::ZeroRotator,EAttachLocation::SnapToTarget);
-	}
-}
-
-void ACPlayer::SpawnProjectile(TSubclassOf<AActor> ClassToSpawn)
-{
-	if (ensure(ClassToSpawn))
-	{
-		FVector HandLoc = GetMesh()->GetSocketLocation(HandSocketName);
-
-		FActorSpawnParameters SpawnParams;
-		SpawnParams.SpawnCollisionHandlingOverride = ESpawnActorCollisionHandlingMethod::AlwaysSpawn;
-		SpawnParams.Instigator = this;
-
-		//Trace
-		FCollisionObjectQueryParams ObjectQueries;
-		ObjectQueries.AddObjectTypesToQuery(ECC_WorldDynamic);
-		ObjectQueries.AddObjectTypesToQuery(ECC_WorldStatic);
-		ObjectQueries.AddObjectTypesToQuery(ECC_Pawn);
-
-		FCollisionShape Shape;
-		Shape.SetSphere(20.f);
-
-		FCollisionQueryParams QueryParm;
-		QueryParm.AddIgnoredActor(this);
-
-		FVector TraceStart = CameraComp->GetComponentLocation();
-		FVector TraceEnd = TraceStart + (GetControlRotation().Vector() * 5000.f);
-		FHitResult Hit;
-		if (GetWorld()->SweepSingleByObjectType(Hit, TraceStart, TraceEnd, FQuat::Identity, ObjectQueries, Shape, QueryParm))
-		{
-			TraceEnd = Hit.ImpactPoint;
-		}
-
-		FRotator ProjectileRotation = FRotationMatrix::MakeFromX(TraceEnd - HandLoc).Rotator();
-
-		//Spawn projectile
-		FTransform SpawnTM(ProjectileRotation, HandLoc);
-		GetWorld()->SpawnActor<AActor>(ClassToSpawn, SpawnTM, SpawnParams);
-	}
-
-}
 
 void ACPlayer::PrimaryInteraction()
 {

@@ -1,5 +1,6 @@
 #include "CActionComponent.h"
 #include "Actions/CAction.h"
+#include "Engine.h"
 
 UCActionComponent::UCActionComponent()
 {
@@ -12,13 +13,19 @@ void UCActionComponent::BeginPlay()
 {
 	Super::BeginPlay();
 
-	
+	for (TSubclassOf<UCAction> DefaultAction : DefaultActions)
+	{
+		AddAction(DefaultAction);
+	}
 }
 
 
 void UCActionComponent::TickComponent(float DeltaTime, ELevelTick TickType, FActorComponentTickFunction* ThisTickFunction)
 {
 	Super::TickComponent(DeltaTime, TickType, ThisTickFunction);
+
+	FString Message = GetNameSafe(GetOwner()) + " : " + ActiveGameplayTags.ToStringSimple();
+	GEngine->AddOnScreenDebugMessage(-1, 0.f, FColor::Blue, Message);
 
 }
 
@@ -42,8 +49,15 @@ bool UCActionComponent::StartActionByName(AActor* Instigator, FName ActionName)
 	{
 		if (Action && Action->ActionName == ActionName)
 		{
+			if (!Action->CanStart(Instigator))
+			{
+				FString Message = FString::Printf(TEXT("Faild to Run : %s"), *ActionName.ToString());
+				GEngine->AddOnScreenDebugMessage(-1, 2.f, FColor::Red, Message);
+				continue;
+			}
 			Action->StartAction(Instigator);
 			return true;
+
 		}
 	}
 
@@ -56,8 +70,11 @@ bool UCActionComponent::StopActionByName(AActor* Instigator, FName ActionName)
 	{
 		if (Action && Action->ActionName == ActionName)
 		{
-			Action->StopAction(Instigator);
-			return true;
+			if (Action->IsRunning())
+			{
+				Action->StopAction(Instigator);
+				return true;
+			}
 		}
 	}
 
