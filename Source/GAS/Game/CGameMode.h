@@ -25,6 +25,10 @@ protected:
 	UFUNCTION()
 		void ReSpawnPlayerElapsed(AController* Controller);
 
+protected:
+	UPROPERTY(BlueprintReadOnly, EditDefaultsOnly, Category = "Credits")
+	int32 CreditsPerKill;
+
 public:
 	virtual void OnActorKilled(AActor* VictimActor, AActor* Killer);
 
@@ -36,7 +40,7 @@ protected:
 	void SpawnBotTimerElapsed();
 
 	UFUNCTION()
-		void OnQueryFinished(UEnvQueryInstanceBlueprintWrapper* QueryInstance, EEnvQueryStatus::Type QueryStatus);
+		void OnSpawnBotQueryFinished(UEnvQueryInstanceBlueprintWrapper* QueryInstance, EEnvQueryStatus::Type QueryStatus);
 
 private:
 	UPROPERTY(EditDefaultsOnly, Category = "AI")
@@ -50,4 +54,22 @@ private:
 
 	UPROPERTY(EditDefaultsOnly, Category = "AI")
 	UCurveFloat* SpawnCurve;
+
+	//Spawn PickUp
+
+protected:
+	UPROPERTY(EditDefaultsOnly, Category = "PickUp")
+	UEnvQuery* SpawnPickupQuery;
+
+	UPROPERTY(EditDefaultsOnly, Category = "PickUp")
+	TArray<TSubclassOf<AActor>> PickupClassess;
+
+	UPROPERTY(EditDefaultsOnly, Category = "PickUp")
+	float MinimumPickupDistance;
+
+	UPROPERTY(EditDefaultsOnly, Category = "PickUp")
+	int32 MaxPickupCount;
+
+	UFUNCTION()
+	void OnSpawnPickUpQueryFinished(UEnvQueryInstanceBlueprintWrapper* QueryInstance, EEnvQueryStatus::Type QueryStatus);
 };

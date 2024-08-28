@@ -8,7 +8,7 @@
 
 class USphereComponent;
 
-UCLASS()
+UCLASS(Abstract)
 class GAS_API ACPickupBase : public AActor, public ICGameplayInterface
 {
 	GENERATED_BODY()
@@ -27,7 +27,10 @@ public:
 
 protected:
 	UPROPERTY(VisibleDefaultsOnly, Category = "Component")
-		USphereComponent* SphereComp;
+	USphereComponent* SphereComp;
+
+	UPROPERTY(VisibleDefaultsOnly, Category = "Component")
+	UStaticMeshComponent* MeshComp;
 
 	UPROPERTY(EditAnywhere, Category = "Pickup")
 		float ReSpawnTime;

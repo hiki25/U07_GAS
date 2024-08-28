@@ -5,18 +5,35 @@
 #include "Characters/CPlayer.h"
 #include "Components/CAttributeComponent.h"
 #include "DrawDebugHelpers.h"
+#include "CPlayerState.h"
 
 static TAutoConsoleVariable<bool> CVarSpawnBots(TEXT("Tore.SpawnBots"), true, TEXT("Enable spawn bots via cvar"), ECVF_Cheat);
 
 ACGameMode::ACGameMode()
 {
 	SpawnTimerDelay = 2.0f;
+	CreditsPerKill = 20;
+
+	MinimumPickupDistance = 2000.f;
+	MaxPickupCount = 10;
+
+	PlayerStateClass = ACPlayerState::StaticClass();
+
 }
 
 void ACGameMode::StartPlay()
 {
 	Super::StartPlay();
 	GetWorldTimerManager().SetTimer(TimerHandle_SpawnBot,this,&ACGameMode::SpawnBotTimerElapsed,SpawnTimerDelay,true);
+
+	if (ensure(PickupClassess.Num() > 0))
+	{
+		UEnvQueryInstanceBlueprintWrapper* QueryInstance = UEnvQueryManager::RunEQSQuery(this,SpawnPickupQuery,this,EEnvQueryRunMode::AllMatching,nullptr);
+		if (ensure(QueryInstance))
+		{
+			QueryInstance->GetOnQueryFinishedEvent().AddDynamic(this, &ACGameMode::OnSpawnPickUpQueryFinished);
+		}
+	}
 }
 
 void ACGameMode::KillAll()
@@ -43,6 +60,16 @@ void ACGameMode::OnActorKilled(AActor* VictimActor, AActor* Killer)
 
 		float RespawnDelay = 5.f;
 		GetWorldTimerManager().SetTimer(TimerHandle_RespawnDelay, Delegate, RespawnDelay, false);
+	}
+
+	APawn* KillerPawn = Cast<APawn>(Killer);
+	if (KillerPawn)
+	{
+		ACPlayerState* PS = KillerPawn->GetPlayerState<ACPlayerState>();
+		if (PS)
+		{
+			PS->AddCredits(CreditsPerKill);
+		}
 	}
 
 	UE_LOG(LogTemp, Log, TEXT("OnActorKilled, Victim : %s, Killer : %s"), *GetNameSafe(VictimActor), *GetNameSafe(Killer));
@@ -96,11 +123,11 @@ void ACGameMode::SpawnBotTimerElapsed()
 	UEnvQueryInstanceBlueprintWrapper* QueryInstance = UEnvQueryManager::RunEQSQuery(this, SpawnBotEQS, this, EEnvQueryRunMode::RandomBest5Pct, nullptr);
 	if (ensure(QueryInstance))
 	{
-	QueryInstance->GetOnQueryFinishedEvent().AddDynamic(this, &ACGameMode::OnQueryFinished);
+	QueryInstance->GetOnQueryFinishedEvent().AddDynamic(this, &ACGameMode::OnSpawnBotQueryFinished);
 	}
 }
 
-void ACGameMode::OnQueryFinished(UEnvQueryInstanceBlueprintWrapper* QueryInstance, EEnvQueryStatus::Type QueryStatus)
+void ACGameMode::OnSpawnBotQueryFinished(UEnvQueryInstanceBlueprintWrapper* QueryInstance, EEnvQueryStatus::Type QueryStatus)
 {
 	if (QueryStatus != EEnvQueryStatus::Success)
 	{
@@ -123,4 +150,27 @@ void ACGameMode::OnQueryFinished(UEnvQueryInstanceBlueprintWrapper* QueryInstanc
 		DrawDebugSphere(GetWorld(), Locations[0],50.f,20, FColor::Blue,false,60.f);
 	}
 
+}
+
+
+void ACGameMode::OnSpawnPickUpQueryFinished(UEnvQueryInstanceBlueprintWrapper* QueryInstance, EEnvQueryStatus::Type QueryStatus)
+{
+	if (QueryStatus != EEnvQueryStatus::Failed)
+	{
+		UE_LOG(LogTemp, Warning, TEXT("SPawn PickUp Query failed"));
+		return;
+	}
+
+	 TArray<FVector> EQSLocation =  QueryInstance->GetResultsAsLocations();
+
+	 int32 SpawnCount = 0;
+
+	 while (SpawnCount < MaxPickupCount && EQSLocation.Num() > 0)
+	 {
+		 int32 RandomLocationIndex = FMath::RandRange(0, EQSLocation.Num() - 1);
+		 FVector SelectedLocation = EQSLocation[RandomLocationIndex];
+
+		 SpawnCount++;
+		 EQSLocation.RemoveAt(RandomLocationIndex);
+	 }
 }

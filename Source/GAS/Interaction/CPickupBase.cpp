@@ -5,7 +5,13 @@ ACPickupBase::ACPickupBase()
 {
 	SphereComp = CreateDefaultSubobject<USphereComponent>("SphereComp");
 	SphereComp->SetCollisionProfileName("Pickup");
+
 	RootComponent = SphereComp;
+
+	MeshComp = CreateDefaultSubobject<UStaticMeshComponent>("MeshComp");
+	MeshComp->SetupAttachment(RootComponent);
+	MeshComp->SetCollisionEnabled(ECollisionEnabled::NoCollision);
+
 
 	ReSpawnTime = 10.f;
 }

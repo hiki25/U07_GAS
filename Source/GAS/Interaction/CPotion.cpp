@@ -1,12 +1,12 @@
 #include "CPotion.h"
 #include "Components/StaticMeshComponent.h"
 #include "Components/CAttributeComponent.h"
+#include "Game/CPlayerState.h"
 
 ACPotion::ACPotion()
 {
-	MeshComp = CreateDefaultSubobject<UStaticMeshComponent>("MeshComp");
-	MeshComp->SetupAttachment(RootComponent);
-	MeshComp->SetCollisionEnabled(ECollisionEnabled::NoCollision);
+
+	CreditCost = 50;
 }
 
 void ACPotion::Interact_Implementation(APawn* InstigatorPawn)
@@ -19,7 +19,9 @@ void ACPotion::Interact_Implementation(APawn* InstigatorPawn)
 	UCAttributeComponent* AttributeComp = UCAttributeComponent::GetAttribute(InstigatorPawn);
 	if (ensure(AttributeComp) && !AttributeComp->IsFullHealth())
 	{
-		if (AttributeComp->ApplyHealthChange(this,AttributeComp->GetMaxHealth()))
+		ACPlayerState* PS = InstigatorPawn->GetPlayerState<ACPlayerState>();
+
+		if (PS->RemoveCredits(CreditCost) && AttributeComp->ApplyHealthChange(this,AttributeComp->GetMaxHealth()))
 		{
 			HideAndCooldown();
 		}

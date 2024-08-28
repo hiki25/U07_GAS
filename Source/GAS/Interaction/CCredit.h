@@ -2,25 +2,21 @@
 
 #include "CoreMinimal.h"
 #include "Interaction/CPickupBase.h"
-#include "CPotion.generated.h"
-
+#include "CCredit.generated.h"
 
 UCLASS()
-class GAS_API ACPotion : public ACPickupBase
+class GAS_API ACCredit : public ACPickupBase
 {
 	GENERATED_BODY()
 
 public:
-	ACPotion();
+	ACCredit();
 
 public:
 	virtual void Interact_Implementation(APawn* InstigatorPawn) override;
 
 protected:
-
 	UPROPERTY(EditAnywhere, Category = "Credits")
-	int32 CreditCost;
-
-
+		int32 CreditAmount;
 	
 };

@@ -1,5 +1,6 @@
 #include "CBot.h"
 #include "Components/CAttributeComponent.h"
+#include "Components/CActionComponent.h"
 #include "Components/CapsuleComponent.h"
 #include "GameFramework/CharacterMovementComponent.h"
 #include "Perception/PawnSensingComponent.h"
@@ -13,6 +14,7 @@ ACBot::ACBot()
 {
 	PawnSensingComp = CreateDefaultSubobject<UPawnSensingComponent>("PawnSensinComp");
 	AttributeComp = CreateDefaultSubobject<UCAttributeComponent>("AttributeComp");
+	ActionComp = CreateDefaultSubobject<UCActionComponent>("ActionComp");
 
 	AutoPossessAI = EAutoPossessAI::PlacedInWorldOrSpawned;
 
