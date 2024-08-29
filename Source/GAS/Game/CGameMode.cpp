@@ -155,13 +155,15 @@ void ACGameMode::OnSpawnBotQueryFinished(UEnvQueryInstanceBlueprintWrapper* Quer
 
 void ACGameMode::OnSpawnPickUpQueryFinished(UEnvQueryInstanceBlueprintWrapper* QueryInstance, EEnvQueryStatus::Type QueryStatus)
 {
-	if (QueryStatus != EEnvQueryStatus::Failed)
+	if (QueryStatus != EEnvQueryStatus::Success)
 	{
 		UE_LOG(LogTemp, Warning, TEXT("SPawn PickUp Query failed"));
 		return;
 	}
 
 	 TArray<FVector> EQSLocation =  QueryInstance->GetResultsAsLocations();
+
+	 TArray<FVector> UsedLocations;
 
 	 int32 SpawnCount = 0;
 
@@ -170,7 +172,33 @@ void ACGameMode::OnSpawnPickUpQueryFinished(UEnvQueryInstanceBlueprintWrapper* Q
 		 int32 RandomLocationIndex = FMath::RandRange(0, EQSLocation.Num() - 1);
 		 FVector SelectedLocation = EQSLocation[RandomLocationIndex];
 
-		 SpawnCount++;
 		 EQSLocation.RemoveAt(RandomLocationIndex);
+
+		 bool bValidLocation = true;
+		 for (FVector UsedLoaction : UsedLocations)
+		 {
+			 float Distance = (SelectedLocation - UsedLoaction).Size();
+			 if (Distance < MinimumPickupDistance)
+			 {
+				 DrawDebugSphere(GetWorld(),SelectedLocation, 50.f,20,FColor::Yellow,false,10.f);
+
+				 bValidLocation = false;
+				 break;
+			 }
+			 
+		 }
+
+		 if (!bValidLocation)
+		 {
+			 continue;
+		 }
+
+		 int32 RandomClassIndex = FMath::RandRange(0, PickupClassess.Num() - 1);
+		 TSubclassOf<AActor> SelectedClass = PickupClassess[RandomClassIndex];
+		 SelectedLocation.Z += 40.f;
+		 GetWorld()->SpawnActor<AActor>(SelectedClass, SelectedLocation,FRotator::ZeroRotator);
+
+		 UsedLocations.Add(SelectedLocation);
+		 SpawnCount++;
 	 }
 }

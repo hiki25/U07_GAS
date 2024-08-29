@@ -6,6 +6,8 @@
 #include "GameplayTagContainer.h"
 #include "CMagicBall.generated.h"
 
+class UCActionEffect;
+
 UCLASS()
 class GAS_API ACMagicBall : public ACprojectileBase
 {
@@ -28,4 +30,7 @@ public:
 
 	UPROPERTY(EditDefaultsOnly, Category = "Damage")
 	FGameplayTag ReflectTag;
+
+	UPROPERTY(EditDefaultsOnly, Category = "ActionEffect")
+	TSubclassOf<UCActionEffect> BurningActionClass;
 };
