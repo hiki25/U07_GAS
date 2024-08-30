@@ -29,7 +29,12 @@ protected:
 		UStaticMeshComponent* BaseMesh;
 	UPROPERTY(BlueprintReadOnly, VisibleDefaultsOnly, Category = "Component")
 		UStaticMeshComponent* LidMesh;
-	
+
+	UPROPERTY(ReplicatedUsing = "OnRep_LidOpen")
+	bool bLidOpen;
+
+	UFUNCTION()
+	void OnRep_LidOpen();
 
 
 };
