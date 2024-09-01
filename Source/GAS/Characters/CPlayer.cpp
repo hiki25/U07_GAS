@@ -41,6 +41,7 @@ void ACPlayer::PostInitializeComponents()
 	Super::PostInitializeComponents();
 
 	AttributeComp->OnHealthChanged.AddDynamic(this,&ACPlayer::OnHealthChanged);
+	AttributeComp->OnChargehChanged.AddDynamic(this,&ACPlayer::OnChargehChanged);
 	
 }
 
@@ -75,12 +76,26 @@ void ACPlayer::OnHealthChanged(AActor* InstigatorActor, UCAttributeComponent* Ow
 	if (Delta < 0.f)
 	{
 		GetMesh()->SetScalarParameterValueOnMaterials(TimeToHitParamName, GetWorld()->TimeSeconds);
+	
 	}
 
 	if (NewHealth <= 0.f && Delta < 0.f)
 	{
 		APlayerController* PC = GetController<APlayerController>();
 		DisableInput(PC);
+	}
+
+}
+
+void ACPlayer::OnChargehChanged(float Delta)
+{
+	if (AttributeComp->IsFullCharge() && Delta > 0.f)
+	{
+		AttributeComp->UsedCharge();
+	}
+	else
+	{
+	AttributeComp->PlusCharge(-Delta);
 	}
 }
 
@@ -116,7 +131,11 @@ void ACPlayer::SecondaryAction()
 
 void ACPlayer::ThirdAction()
 {
+	if (AttributeComp->IsFullCharge())
+	{
 	ActionComp->StartActionByName(this, "BlackHole");
+	AttributeComp->OnChargehChanged.Broadcast(AttributeComp->GetMaxCharge());
+	}
 }
 
 

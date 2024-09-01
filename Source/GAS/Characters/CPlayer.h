@@ -23,6 +23,8 @@ public:
 	UFUNCTION(Exec)
 	void HealSelf(float Amount = 100);
 
+	FORCEINLINE UCActionComponent* GetActionComp() {return ActionComp;}
+
 protected:
 	virtual void PostInitializeComponents() override;
 	virtual void SetupPlayerInputComponent(class UInputComponent* PlayerInputComponent) override;
@@ -31,6 +33,9 @@ protected:
 protected:
 	UFUNCTION()
 	void OnHealthChanged(AActor* InstigatorActor, UCAttributeComponent* OwningComp, float NewHealth, float Delta);
+
+	UFUNCTION()
+	void OnChargehChanged(float Delta);
 
 protected:
 	void MoveForward(float Value);
@@ -64,11 +69,6 @@ protected:
 	UCActionComponent* ActionComp;
 
 protected:
-
-
-
-
-
 	UPROPERTY(EditAnywhere, Category = "Action")
 		FName TimeToHitParamName;
 };

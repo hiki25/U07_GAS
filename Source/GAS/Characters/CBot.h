@@ -44,5 +44,11 @@ protected:
 	UPROPERTY(EditDefaultsOnly, Category = "UI")
 	TSubclassOf<UCWorldWidget> HealthBarWidgetClass;
 
+	UPROPERTY(EditDefaultsOnly, Category = "UI")
+		TSubclassOf<UCWorldWidget> PlayerOkayClass;
+
 	UCWorldWidget* HealthBarWidget;
+	UCWorldWidget* PlayerOkayWidget;
+
+
 };

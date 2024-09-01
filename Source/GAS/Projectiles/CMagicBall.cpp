@@ -29,6 +29,12 @@ void ACMagicBall::OnActorOverlap(UPrimitiveComponent* OverlappedComponent, AActo
 			SetInstigator(Cast<APawn>(OtherActor));
 			return;
 		}
+
+		if (ActionComp && ActionComp->ActiveGameplayTags.HasTag(ThornmailTag))
+		{
+			UCFunctionLibrary::ApplyDamage(OtherActor,GetInstigator(), DamageAmount);
+		}
+
 		if (UCFunctionLibrary::ApplyDirectionDamage(GetInstigator(), OtherActor,DamageAmount, SweepResult))
 		{
 			Explode();

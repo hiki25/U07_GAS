@@ -31,6 +31,9 @@ public:
 	UPROPERTY(EditDefaultsOnly, Category = "Damage")
 	FGameplayTag ReflectTag;
 
+	UPROPERTY(EditDefaultsOnly, Category = "Damage")
+	FGameplayTag ThornmailTag;
+
 	UPROPERTY(EditDefaultsOnly, Category = "ActionEffect")
 	TSubclassOf<UCActionEffect> BurningActionClass;
 };

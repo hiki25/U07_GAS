@@ -6,6 +6,7 @@
 #include "CAttributeComponent.generated.h"
 
 DECLARE_DYNAMIC_MULTICAST_DELEGATE_FourParams(FOnHealthChanged, AActor*, InstigatorActor, class UCAttributeComponent*, OwningComp,float, NewHealth ,float, Delta);
+DECLARE_DYNAMIC_MULTICAST_DELEGATE_OneParam(FOnChargehChanged ,float, Delta);
 
 UCLASS( ClassGroup=(Custom), meta=(BlueprintSpawnableComponent) )
 class GAS_API UCAttributeComponent : public UActorComponent
@@ -38,17 +39,33 @@ public:
 	bool IsFullHealth() const;
 
 	UFUNCTION(BlueprintCallable, Category = "Attribute")
+		bool IsFullCharge() const;
+
+
+	UFUNCTION(BlueprintCallable, Category = "Attribute")
 	float GetMaxHealth() const;
 
 	UFUNCTION(BlueprintCallable, Category = "Attribute")
-		float GetHealth() const;
+	float GetMaxCharge() const;
+
+	UFUNCTION(BlueprintCallable, Category = "Attribute")
+		void  PlusCharge(float Delta);
+
+	UFUNCTION(BlueprintCallable, Category = "Attribute")
+	float GetHealth() const;
 
 	UFUNCTION(BlueprintCallable, Category = "Cheat")
 	bool Kill(AActor* Killer);
 
+	void UsedCharge();
+
+
 public:
 	UPROPERTY(BlueprintAssignable)
 	FOnHealthChanged OnHealthChanged;
+
+	UPROPERTY(BlueprintAssignable)
+	FOnChargehChanged OnChargehChanged;
 
 protected:
 	UPROPERTY(BlueprintReadOnly, EditDefaultsOnly, Category = "Attribute")
@@ -56,5 +73,13 @@ protected:
 
 	UPROPERTY(BlueprintReadOnly, EditDefaultsOnly, Category = "Attribute")
 	float MaxHealth;
+
+protected:
+	//±Ã±Ø±â
+	UPROPERTY(BlueprintReadOnly, EditDefaultsOnly, Category = "Attribute")
+		float MaxCharge;
+
+	UPROPERTY(BlueprintReadOnly, EditDefaultsOnly, Category = "Attribute")
+		float Charge;
 		
 };

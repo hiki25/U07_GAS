@@ -24,7 +24,7 @@ void ACChest::BeginPlay()
 
 void ACChest::Interact_Implementation(APawn* InstigatorPawn)
 {
-	bLidOpen != bLidOpen;
+	bLidOpen = !bLidOpen;
 }
 
 void ACChest::OnRep_LidOpen()

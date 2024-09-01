@@ -61,6 +61,14 @@ bool UCAttributeComponent::ApplyHealthChange(AActor* Instigatorctor,float Delta)
 		OnHealthChanged.Broadcast(Instigatorctor,this, Health, ActualDelta);
 	}
 
+	if (ActualDelta < 0.f)
+	{
+		if (OnChargehChanged.IsBound())
+		{
+			OnChargehChanged.Broadcast(ActualDelta);
+		}
+	}
+	
 	if (ActualDelta < 0.f && Health <= 0.f)
 	{
 		ACGameMode* GM = GetWorld()->GetAuthGameMode<ACGameMode>();
@@ -69,7 +77,7 @@ bool UCAttributeComponent::ApplyHealthChange(AActor* Instigatorctor,float Delta)
 			GM->OnActorKilled(GetOwner(), Instigatorctor);
 		}
 	}
-
+	
 	return !FMath::IsNearlyZero(ActualDelta);
 }
 
@@ -83,6 +91,11 @@ bool UCAttributeComponent::IsFullHealth() const
 	return FMath::IsNearlyEqual(Health,MaxHealth);
 }
 
+bool UCAttributeComponent::IsFullCharge() const
+{
+	return (Charge >= MaxCharge);
+}
+
 float UCAttributeComponent::GetHealth() const
 {
 	return Health;
@@ -93,9 +106,27 @@ float UCAttributeComponent::GetMaxHealth() const
 	return MaxHealth;
 }
 
+float UCAttributeComponent::GetMaxCharge() const
+{
+	return MaxCharge;
+}
+
+void UCAttributeComponent::PlusCharge(float Delta) 
+{
+	if (Charge < MaxCharge)
+	{
+	 Charge += Delta;
+	}
+}
+
 bool UCAttributeComponent::Kill(AActor* Killer)
 {
 	return ApplyHealthChange(Killer,-GetMaxHealth());
+}
+
+void UCAttributeComponent::UsedCharge()
+{
+	Charge = 0;
 }
 
 

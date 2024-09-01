@@ -40,7 +40,12 @@ void ACBot::OnSeePawn(APawn* Pawn)
 		SetTargetActor(Pawn);
 
 		DrawDebugString(GetWorld(), GetActorLocation(), "Gat Cha",nullptr,FColor::Black,3.f,true);;
-	
+		PlayerOkayWidget = CreateWidget<UCWorldWidget>(GetWorld(),PlayerOkayClass);
+		if (PlayerOkayWidget)
+		{
+			PlayerOkayWidget->AttachToActor = this;
+			PlayerOkayWidget->AddToViewport();
+		}
 	 }
 }
 
