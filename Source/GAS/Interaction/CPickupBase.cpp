@@ -14,6 +14,8 @@ ACPickupBase::ACPickupBase()
 
 
 	ReSpawnTime = 10.f;
+
+	SetReplicates(true);
 }
 
 void ACPickupBase::Interact_Implementation(APawn* InstigatorPawn)

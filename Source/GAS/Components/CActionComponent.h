@@ -34,6 +34,10 @@ public:
 	UFUNCTION(BlueprintCallable, Category = "Action")
 	bool StopActionByName(AActor* Instigator, FName ActionName);
 
+protected:
+	UFUNCTION(Reliable, Server)
+		void ServerStartAction(AActor* Instigator, FName ActionName);
+
 public:
 	UPROPERTY(BlueprintReadWrite, EditAnywhere, Category = "GameplayTag")
 	FGameplayTagContainer ActiveGameplayTags;

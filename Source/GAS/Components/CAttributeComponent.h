@@ -31,6 +31,9 @@ public:
 	UFUNCTION(BlueprintCallable, Category = "Attribute")
 	bool ApplyHealthChange(AActor* Instigatorctor,float Delta);
 
+	UFUNCTION(NetMulticast, Reliable)
+	void NetMulticastHealthChanged(AActor* Instigatorctor, float NewHealth, float Delta);
+
 	UFUNCTION(BlueprintCallable, Category = "Attribute")
 	bool IsAlive() const;
 
@@ -41,7 +44,7 @@ public:
 	float GetMaxHealth() const;
 
 	UFUNCTION(BlueprintCallable, Category = "Attribute")
-		float GetHealth() const;
+	float GetHealth() const;
 
 	UFUNCTION(BlueprintCallable, Category = "Cheat")
 	bool Kill(AActor* Killer);
@@ -51,10 +54,10 @@ public:
 	FOnHealthChanged OnHealthChanged;
 
 protected:
-	UPROPERTY(BlueprintReadOnly, EditDefaultsOnly, Category = "Attribute")
+	UPROPERTY(BlueprintReadOnly, EditDefaultsOnly, Replicated, Category = "Attribute")
 	float Health;
-
-	UPROPERTY(BlueprintReadOnly, EditDefaultsOnly, Category = "Attribute")
+	
+	UPROPERTY(BlueprintReadOnly, EditDefaultsOnly, Replicated, Category = "Attribute")
 	float MaxHealth;
 		
 };

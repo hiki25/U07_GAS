@@ -28,6 +28,8 @@ ACprojectileBase::ACprojectileBase()
 
 	ImpactShakeInnerRadius = 10.f;
 	ImpactShakeOuterRadius = 1500.f;
+
+	SetReplicates(true);
 }
 
 void ACprojectileBase::BeginPlay()
