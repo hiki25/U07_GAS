@@ -47,6 +47,8 @@ bool UCAttributeComponent::ApplyHealthChange(AActor* Instigatorctor,float Delta)
 		return false;
 	}
 
+	
+
 	if (Delta < 0.f)
 	{
 		float DamageMultiplier = CVarDamageMultiplier.GetValueOnGameThread();
@@ -54,24 +56,29 @@ bool UCAttributeComponent::ApplyHealthChange(AActor* Instigatorctor,float Delta)
 	}
 
 	float PrevHealth = Health;
+	float NewHealth = FMath::Clamp(Health + Delta, 0.f, MaxHealth);
 
-	Health = FMath::Clamp(Health += Delta, 0.f, MaxHealth);
+	float ActualDelta = NewHealth - PrevHealth;
 
-	float ActualDelta = Health - PrevHealth;
-
-	if (!FMath::IsNearlyZero(ActualDelta))
+	if (GetOwner()->HasAuthority())
 	{
-	NetMulticastHealthChanged(Instigatorctor, Health,ActualDelta);
-	}
-
-	if (ActualDelta < 0.f && Health <= 0.f)
-	{
-		ACGameMode* GM = GetWorld()->GetAuthGameMode<ACGameMode>();
-		if (ensure(GM))
+		Health = NewHealth;
+		if (!FMath::IsNearlyZero(ActualDelta))
 		{
-			GM->OnActorKilled(GetOwner(), Instigatorctor);
+			NetMulticastHealthChanged(Instigatorctor, Health, ActualDelta);
+		}
+
+		if (ActualDelta < 0.f && Health <= 0.f)
+		{
+			ACGameMode* GM = GetWorld()->GetAuthGameMode<ACGameMode>();
+			if (ensure(GM))
+			{
+				GM->OnActorKilled(GetOwner(), Instigatorctor);
+			}
 		}
 	}
+
+	
 
 	return !FMath::IsNearlyZero(ActualDelta);
 }
@@ -83,7 +90,7 @@ void UCAttributeComponent::NetMulticastHealthChanged_Implementation(AActor* Inst
 
 bool UCAttributeComponent::IsAlive() const
 {
-	return Health> 0.f;
+	return Health > 0.f;
 }
 
 bool UCAttributeComponent::IsFullHealth() const

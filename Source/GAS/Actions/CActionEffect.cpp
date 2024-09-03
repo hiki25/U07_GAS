@@ -39,10 +39,10 @@ void UCActionEffect::StopAction_Implementation(AActor* Instigator)
 
 	Super::StopAction_Implementation(Instigator);
 
-	UCActionComponent* ActionComp = GetOwningComponent();
-	if (ActionComp)
+	UCActionComponent* Comp = GetOwningComponent();
+	if (Comp)
 	{
-		ActionComp->RemoveAction(this);
+		Comp->RemoveAction(this);
 	}
 }
 

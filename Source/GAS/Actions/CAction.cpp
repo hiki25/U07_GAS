@@ -1,4 +1,7 @@
 #include "CAction.h"
+#include "GAS.h"
+#include "Components/CActionComponent.h"
+#include "Net/UnrealNetwork.h"
 
 bool UCAction::CanStart_Implementation(AActor* Instigator)
 {
@@ -7,57 +10,84 @@ bool UCAction::CanStart_Implementation(AActor* Instigator)
 		return false;
 	}
 
-	UCActionComponent* ActionComp = GetOwningComponent();
+	UCActionComponent* Comp = GetOwningComponent();
 
-	if (ActionComp->ActiveGameplayTags.HasAny(BlockTags))
+	if (Comp->ActiveGameplayTags.HasAny(BlockTags))
 	{
 		return false;
 	}
 
 	return true;
+
 }
 
 void UCAction::StartAction_Implementation(AActor* Instigator)
 {
-	UE_LOG(LogTemp, Log, TEXT("Running : %s"), *GetNameSafe(this));
+	UE_LOG(LogTemp, Log, TEXT("Started : %s"), *GetNameSafe(this));
 
+	UCActionComponent* Comp = GetOwningComponent();
+	Comp->ActiveGameplayTags.AppendTags(GrantTags);
 
-	UCActionComponent* ActionComp = GetOwningComponent();
-	ActionComp->ActiveGameplayTags.AppendTags(GrantTags);
-
-	bIsRunning = true;
+	RepData.bIsRunning = true;
+	RepData.Instigator = Instigator;
 }
 
 void UCAction::StopAction_Implementation(AActor* Instigator)
 {
 	UE_LOG(LogTemp, Log, TEXT("Stopping : %s"), *GetNameSafe(this));
 
-	
+	UCActionComponent* Comp = GetOwningComponent();
+	Comp->ActiveGameplayTags.RemoveTags(GrantTags);
 
-	UCActionComponent* ActionComp = GetOwningComponent();
-	ActionComp->ActiveGameplayTags.RemoveTags(GrantTags);
-
-	bIsRunning = false;
+	RepData.bIsRunning = false;
+	RepData.Instigator = Instigator;
 }
 
 
 
 UWorld* UCAction::GetWorld() const
 {
-	UCActionComponent* ActionComp = Cast<UCActionComponent>(GetOuter());
-	if (ActionComp)
+	AActor* Actor = Cast<AActor>(GetOuter());
+	if (Actor)
 	{
-		return ActionComp->GetWorld();
+		return Actor->GetWorld();
 	}
 	return nullptr;
 }
 
+
+
 UCActionComponent* UCAction::GetOwningComponent() const
 {
-	return Cast<UCActionComponent>(GetOuter());
+	return ActionComp;
+}
+
+void UCAction::SetOwningComponent(UCActionComponent* NewActionComp)
+{
+	ActionComp = NewActionComp;
+}
+
+void UCAction::OnRep_IsRunning()
+{
+	if (RepData.bIsRunning)
+	{
+		StartAction(Cast<AActor>(GetOuter()));
+	}
+	else
+	{
+		StopAction(Cast<AActor>(GetOuter()));
+	}
 }
 
 bool UCAction::IsRunning() const
 {
-	return bIsRunning;
+	return RepData.bIsRunning;
+}
+
+void UCAction::GetLifetimeReplicatedProps(TArray<class FLifetimeProperty>& OutLifetimeProps) const
+{
+	Super::GetLifetimeReplicatedProps(OutLifetimeProps);
+
+	DOREPLIFETIME(UCAction, RepData);
+	DOREPLIFETIME(UCAction, ActionComp);
 }

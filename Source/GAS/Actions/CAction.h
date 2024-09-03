@@ -6,10 +6,18 @@
 #include "GameplayTagContainer.h"
 #include "CAction.generated.h"
 
+class UCActionComponent;
+
 UCLASS(Blueprintable)
 class GAS_API UCAction : public UObject
 {
 	GENERATED_BODY()
+
+public:
+	FORCEINLINE virtual bool IsSupportedForNetworking() const override
+	{
+		return true;
+	}
 
 public:
 	UFUNCTION(BlueprintNativeEvent, Category = "Action")
@@ -22,6 +30,9 @@ public:
 
 	UFUNCTION(BlueprintCallable, Category = "Action")
 	bool IsRunning() const;
+
+
+	void SetOwningComponent(UCActionComponent* NewActionComp);
 
 	UWorld* GetWorld() const override; 
 
@@ -42,6 +53,12 @@ protected:
 	UPROPERTY(EditDefaultsOnly, Category = "GameplayTag")
 	FGameplayTagContainer BlockTags;
 
+	UPROPERTY(ReplicatedUsing = "OnRep_IsRunning")
+		FActionRepData RepData;
 
-	bool bIsRunning;
+	UFUNCTION()
+	void OnRep_IsRunning();
+
+	UPROPERTY(Replicated)
+	UCActionComponent* ActionComp;
 };
