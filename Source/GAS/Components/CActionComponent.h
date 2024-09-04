@@ -41,6 +41,9 @@ public:
 	void AddAction(AActor* Instigator,TSubclassOf<UCAction> ActionClass);
 
 	UFUNCTION(BlueprintCallable, Category = "Action")
+	UCAction* GetAction(TSubclassOf<UCAction> ActionClass) const; 
+
+	UFUNCTION(BlueprintCallable, Category = "Action")
 	void RemoveAction(UCAction* ActionToRemove);
 
 	UFUNCTION(BlueprintCallable, Category = "Action")
@@ -52,6 +55,9 @@ public:
 protected:
 	UFUNCTION(Reliable, Server)
 		void ServerStartAction(AActor* Instigator, FName ActionName);
+
+	UFUNCTION(Reliable, Server)
+		void ServerStopAction(AActor* Instigator, FName ActionName);
 
 public:
 	UPROPERTY(BlueprintReadWrite, EditAnywhere, Category = "GameplayTag")

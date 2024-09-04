@@ -22,6 +22,8 @@ ACBot::ACBot()
 	GetMesh()->SetGenerateOverlapEvents(true);
 
 	TimeToHitParamName = "TimeToHit";
+
+	TargeActorKeyName = "TargetActor";
 }
 
 void ACBot::PostInitializeComponents()
@@ -34,13 +36,20 @@ void ACBot::PostInitializeComponents()
 
 void ACBot::OnSeePawn(APawn* Pawn)
 {
-	 AAIController* AIC = Cast<AAIController>(GetController());
-	 if (ensure(AIC))
+	 AAIController* AIC = GetController<AAIController>();
+	 if (ensure(AIC && SpottedWidgetClass))
 	 {
-		SetTargetActor(Pawn);
+		 if (GetTargetActor() != Pawn)
+		 {
+			 SetTargetActor(Pawn);
 
-		DrawDebugString(GetWorld(), GetActorLocation(), "Gat Cha",nullptr,FColor::Black,3.f,true);;
-	
+			 UCWorldWidget* SpottedWidget = CreateWidget<UCWorldWidget>(GetWorld(), SpottedWidgetClass);
+			 if (SpottedWidget)
+			 {
+				 SpottedWidget->AttachToActor = this;
+				 SpottedWidget->AddToViewport(10);
+			 }
+		 }
 	 }
 }
 
@@ -90,6 +99,18 @@ void ACBot::SetTargetActor(AActor* NewTarget)
 	AAIController* AIC = GetController<AAIController>();
 	if (AIC)
 	{
-	AIC->GetBlackboardComponent()->SetValueAsObject("TargetActor", NewTarget);
+	AIC->GetBlackboardComponent()->SetValueAsObject(TargeActorKeyName, NewTarget);
 	}
+}
+
+
+AActor* ACBot::GetTargetActor() const
+{
+	AAIController* AIC = GetController<AAIController>();
+	if (AIC)
+	{
+		return Cast<AActor>(AIC->GetBlackboardComponent()->GetValueAsObject(TargeActorKeyName));
+	}
+
+	return nullptr;
 }

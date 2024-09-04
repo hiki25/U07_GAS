@@ -9,6 +9,9 @@ UCAttributeComponent::UCAttributeComponent()
 	MaxHealth = 100.f;
 	Health = MaxHealth;
 
+	MaxRage = 100.f;
+	Rage = 0.f;
+
 	SetIsReplicatedByDefault(true);
 }
 
@@ -111,6 +114,32 @@ float UCAttributeComponent::GetMaxHealth() const
 bool UCAttributeComponent::Kill(AActor* Killer)
 {
 	return ApplyHealthChange(Killer,-GetMaxHealth());
+}
+
+float UCAttributeComponent::GetMaxRage() const
+{
+	return MaxRage;
+}
+
+float UCAttributeComponent::GetRage() const
+{
+	return Rage;
+}
+
+bool UCAttributeComponent::ApplyRageChange(AActor* Instigatorctor, float Delta)
+{
+	float PrevRage = Rage;
+	Rage = FMath::Clamp(Rage + Delta, 0.f, MaxRage);
+
+	float ActualDelta = Rage - PrevRage;
+
+	
+		if (!FMath::IsNearlyZero(ActualDelta))
+		{
+			OnRageChanged.Broadcast(Instigatorctor,this ,Rage, ActualDelta);
+		}
+
+	return !FMath::IsNearlyZero(ActualDelta);
 }
 
 

@@ -5,7 +5,7 @@
 #include "Engine.h"
 #include "CAttributeComponent.generated.h"
 
-DECLARE_DYNAMIC_MULTICAST_DELEGATE_FourParams(FOnHealthChanged, AActor*, InstigatorActor, class UCAttributeComponent*, OwningComp,float, NewHealth ,float, Delta);
+DECLARE_DYNAMIC_MULTICAST_DELEGATE_FourParams(FOnAttributeChanged, AActor*, InstigatorActor, class UCAttributeComponent*, OwningComp,float, NewVaule ,float, Delta);
 
 UCLASS( ClassGroup=(Custom), meta=(BlueprintSpawnableComponent) )
 class GAS_API UCAttributeComponent : public UActorComponent
@@ -49,9 +49,25 @@ public:
 	UFUNCTION(BlueprintCallable, Category = "Cheat")
 	bool Kill(AActor* Killer);
 
+	UFUNCTION(BlueprintCallable, Category = "Attribute")
+	float GetMaxRage() const;
+
+	UFUNCTION(BlueprintCallable, Category = "Attribute")
+	float GetRage() const;
+
+	UFUNCTION(BlueprintCallable, Category = "Attribute")
+	bool ApplyRageChange(AActor* Instigatorctor, float Delta);
+
+	//UFUNCTION(NetMulticast, Reliable)
+	//void NetMulticastRageChanged(AActor* Instigatorctor, float NewHealth, float Delta);
+
+
 public:
 	UPROPERTY(BlueprintAssignable)
-	FOnHealthChanged OnHealthChanged;
+	FOnAttributeChanged OnHealthChanged;
+
+	UPROPERTY(BlueprintAssignable)
+	FOnAttributeChanged OnRageChanged;
 
 protected:
 	UPROPERTY(BlueprintReadOnly, EditDefaultsOnly, Replicated, Category = "Attribute")
@@ -59,5 +75,11 @@ protected:
 	
 	UPROPERTY(BlueprintReadOnly, EditDefaultsOnly, Replicated, Category = "Attribute")
 	float MaxHealth;
+
+	UPROPERTY(BlueprintReadOnly, EditDefaultsOnly, Replicated, Category = "Attribute")
+	float Rage;
+
+	UPROPERTY(BlueprintReadOnly, EditDefaultsOnly, Replicated, Category = "Attribute")
+	float MaxRage;
 		
 };
