@@ -1,5 +1,6 @@
 #include "CPickupBase_AddAction.h"
 #include "Components/CActionComponent.h"
+#include "Actions/CAction.h"
 
 void ACPickupBase_AddAction::Interact_Implementation(APawn* InstigatorPawn)
 {

@@ -86,7 +86,13 @@ void UCActionComponent::AddAction(AActor* Instigator,TSubclassOf<UCAction> Actio
 
 UCAction* UCActionComponent::GetAction(TSubclassOf<UCAction> ActionClass) const
 {
-	//Todo. 해당 액션 검색 기능
+	for (UCAction* Action : Actions)
+	{
+		if (Action && Action->IsA(ActionClass))
+		{
+			return Action;
+		}
+	}
 	return nullptr;
 }
 

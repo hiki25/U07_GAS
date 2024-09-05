@@ -7,6 +7,7 @@
 #include "CGameMode.generated.h"
 
 class UEnvQuery;
+class UCSaveGame;
 
 UCLASS()
 class GAS_API ACGameMode : public AGameModeBase
@@ -17,7 +18,9 @@ public:
 	ACGameMode();
 
 protected:
+	virtual void InitGame(const FString& MapName, const FString& Options, FString& ErrorMessage) override;
 	virtual void StartPlay() override;
+	void HandleStartingNewPlayer_Implementation(APlayerController* NewPlayer) override;
 
 	UFUNCTION(Exec)
 		void KillAll();
@@ -72,4 +75,18 @@ protected:
 
 	UFUNCTION()
 	void OnSpawnPickUpQueryFinished(UEnvQueryInstanceBlueprintWrapper* QueryInstance, EEnvQueryStatus::Type QueryStatus);
+
+//SaveGame
+protected:
+	UPROPERTY()
+	UCSaveGame* CurrentSaveGame;
+
+	FString SlotName;
+
+public:
+	UFUNCTION(BlueprintCallable, Category = "SaveGame")
+	void WriteSaveGame();
+
+	void LoadSaveGame();
+
 };

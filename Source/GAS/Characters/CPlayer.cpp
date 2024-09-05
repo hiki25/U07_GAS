@@ -75,6 +75,9 @@ void ACPlayer::OnHealthChanged(AActor* InstigatorActor, UCAttributeComponent* Ow
 	if (Delta < 0.f)
 	{
 		GetMesh()->SetScalarParameterValueOnMaterials(TimeToHitParamName, GetWorld()->TimeSeconds);
+
+		float RageDelta = FMath::Abs(Delta);
+		AttributeComp->ApplyRageChange(this, RageDelta);
 	}
 
 	if (NewHealth <= 0.f && Delta < 0.f)
