@@ -17,4 +17,7 @@ class GAS_API ICGameplayInterface
 public:
 	UFUNCTION(BlueprintCallable, BlueprintNativeEvent)
 	void Interact(APawn* InstigatorPawn);
+
+	UFUNCTION(BlueprintCallable, BlueprintNativeEvent)
+	void OnActorLoaded();
 };

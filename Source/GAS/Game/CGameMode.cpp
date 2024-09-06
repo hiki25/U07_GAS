@@ -8,6 +8,7 @@
 #include "DrawDebugHelpers.h"
 #include "CPlayerState.h"
 #include "Kismet/GameplayStatics.h"
+#include "Serialization/ObjectAndNameAsStringProxyArchive.h"
 #include "CSaveGame.h"
 #include "CGameplayInterface.h"
 
@@ -56,7 +57,7 @@ void ACGameMode::HandleStartingNewPlayer_Implementation(APlayerController* NewPl
 	ACPlayerState* PS = NewPlayer->GetPlayerState<ACPlayerState>();
 	if (PS)
 	{
-		PS->SavePlayerState(CurrentSaveGame);
+		PS->LoadPlayerState(CurrentSaveGame);
 	}
 }
 
@@ -231,6 +232,7 @@ void ACGameMode::OnSpawnPickUpQueryFinished(UEnvQueryInstanceBlueprintWrapper* Q
 
 void ACGameMode::WriteSaveGame()
 {
+	//PlayStates, Credit
 	for (int32 i = 0; i < GameState->PlayerArray.Num(); i++)
 	{
 		ACPlayerState* PS = Cast<ACPlayerState>(GameState->PlayerArray[i]); 
@@ -239,17 +241,34 @@ void ACGameMode::WriteSaveGame()
 			PS->SavePlayerState(CurrentSaveGame);
 			break;
 		}
+	}
 
 		//Actor
-		for (FActorIterator It(GetWorld()); It; It++)
+	CurrentSaveGame->SavedActors.Empty();
+
+	for (FActorIterator It(GetWorld()); It; ++It)
+	{
+		AActor* Actor = *It;
+		if (!Actor->Implements<UCGameplayInterface>())
 		{
-			AActor* Actor = *It;
-			if (!Actor->Implements<UCGameplayInterface>())
-			{
-				continue;
-			}
+			continue;
 		}
+
+		FActorSaveData ActorData;
+		ActorData.ActorName = Actor->GetName();
+		ActorData.Transform = Actor->GetTransform();
+
+		//직렬화에 쓸 버퍼의 크기, 용도(쓰기)를 정하는 구간
+		//버퍼를 메모리에 올린 후 설정
+		//직렬화
+		FMemoryWriter MemWriter(ActorData.ByteData);
+		FObjectAndNameAsStringProxyArchive Desc(MemWriter,true);
+		Desc.ArIsSaveGame = true; //SaveGame 옵션이 켜져있는 변수를 찾아라
+		Actor->Serialize(Desc);
+
+		CurrentSaveGame->SavedActors.Add(ActorData);
 	}
+	
 
 	UGameplayStatics::SaveGameToSlot(CurrentSaveGame,SlotName,0);
 }
@@ -267,6 +286,34 @@ void ACGameMode::LoadSaveGame()
 		}
 
 		UE_LOG(LogTemp, Log, TEXT("Loaded SaveGame Data."));
+
+		//Load Actor
+		for (FActorIterator It(GetWorld()); It; ++It)
+		{
+			AActor* Actor = *It;
+			if (!Actor->Implements<UCGameplayInterface>())
+			{
+				continue;
+			}
+
+			for (FActorSaveData ActorData : CurrentSaveGame->SavedActors)
+			{
+				if (Actor->GetName() == ActorData.ActorName)
+				{
+					Actor->SetActorTransform(ActorData.Transform);
+
+					//메모리를읽는 버퍼
+					FMemoryReader MemReader(ActorData.ByteData);
+					FObjectAndNameAsStringProxyArchive Desc(MemReader, true);
+					Desc.ArIsSaveGame = true; //SaveGame 옵션이 켜져있는 변수를 찾아라
+					Actor->Serialize(Desc);
+
+					ICGameplayInterface::Execute_OnActorLoaded(Actor);
+
+					break;
+				}
+			}
+		}
 	}
 	else
 	{

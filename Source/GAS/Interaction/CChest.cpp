@@ -25,11 +25,18 @@ void ACChest::BeginPlay()
 void ACChest::Interact_Implementation(APawn* InstigatorPawn)
 {
 	bLidOpen = !bLidOpen;
+	OnRep_LidOpen();
+}
+
+void ACChest::OnActorLoaded_Implementation()
+{
+	OnRep_LidOpen();
 }
 
 void ACChest::OnRep_LidOpen()
 {
-	LidMesh->SetRelativeRotation(FRotator(MaxPitch, 0, 0));
+	float CurrentPitch = bLidOpen ? MaxPitch : 0.f;
+	LidMesh->SetRelativeRotation(FRotator(CurrentPitch, 0, 0));
 }
 
 

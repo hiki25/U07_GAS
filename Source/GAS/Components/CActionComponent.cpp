@@ -30,17 +30,17 @@ void UCActionComponent::TickComponent(float DeltaTime, ELevelTick TickType, FAct
 {
 	Super::TickComponent(DeltaTime, TickType, ThisTickFunction);
 
-	for (UCAction* Action : Actions)
-	{
-		FColor TextColor = Action->IsRunning() ? FColor::Blue : FColor::White;
-
-		FString ActionMsg = FString::Printf(TEXT("[%s] Action : %s"),
-			*GetNameSafe(GetOwner()),
-			*GetNameSafe(Action)
-			);
-
-		LogOnScreen(this, ActionMsg,TextColor, 0.f);
-	}
+	//for (UCAction* Action : Actions)
+	//{
+	//	FColor TextColor = Action->IsRunning() ? FColor::Blue : FColor::White;
+	//
+	//	FString ActionMsg = FString::Printf(TEXT("[%s] Action : %s"),
+	//		*GetNameSafe(GetOwner()),
+	//		*GetNameSafe(Action)
+	//		);
+	//
+	//	LogOnScreen(this, ActionMsg,TextColor, 0.f);
+	//}
 
 }
 

@@ -34,6 +34,9 @@ public:
 	FOnCreditsChanged OnCreditsChanged;
 
 protected:
-	UPROPERTY(EditDefaultsOnly, Category = "Credits")
+	UPROPERTY(EditDefaultsOnly, Category = "Credits", ReplicatedUsing = "OnRep_Credit")
 	int32 Credits;
+
+	UFUNCTION()
+	void OnRep_Credit(int32 OldCredits);
 };

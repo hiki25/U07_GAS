@@ -32,7 +32,7 @@ public:
 	bool ApplyHealthChange(AActor* Instigatorctor,float Delta);
 
 	UFUNCTION(NetMulticast, Reliable)
-	void NetMulticastHealthChanged(AActor* Instigatorctor, float NewHealth, float Delta);
+	void NetMulticastHealthChanged(AActor* Instigatorctor, float NewRage, float Delta);
 
 	UFUNCTION(BlueprintCallable, Category = "Attribute")
 	bool IsAlive() const;
@@ -58,8 +58,8 @@ public:
 	UFUNCTION(BlueprintCallable, Category = "Attribute")
 	bool ApplyRageChange(AActor* Instigatorctor, float Delta);
 
-	//UFUNCTION(NetMulticast, Reliable)
-	//void NetMulticastRageChanged(AActor* Instigatorctor, float NewHealth, float Delta);
+	UFUNCTION(NetMulticast, Reliable)
+	void NetMulticastRageChanged(AActor* Instigatorctor, float NewRage, float Delta);
 
 
 public:

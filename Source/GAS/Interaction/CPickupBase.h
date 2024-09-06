@@ -37,4 +37,9 @@ protected:
 
 	FTimerHandle TimerHandle_ReSpawnTimer;
 
+	UPROPERTY(ReplicatedUsing = "OnRep_IsActive")
+	bool bIsActive;
+
+	UFUNCTION()
+	void OnRep_IsActive();
 };
