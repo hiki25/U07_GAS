@@ -14,8 +14,17 @@ class GAS_API ACPlayerController : public APlayerController
 
 protected:
 	virtual void SetPawn(APawn* InPawn) override;
-
+	virtual void BeginPlayingState() override;
 	virtual void OnRep_PlayerState() override;
+
+	void SetupInputComponent() override;
+
+protected:
+	UFUNCTION(BlueprintImplementableEvent)
+	void BlueprintBegindState();
+
+	UFUNCTION(BlueprintCallable)
+	void ToggleGameMenu();
 
 public:
 	UPROPERTY(BlueprintAssignable)
@@ -23,5 +32,12 @@ public:
 
 	UPROPERTY(BlueprintAssignable)
 	FOnPlayerStateChanged OnPlayerStateChanged;
+
+protected:
+	UPROPERTY(EditDefaultsOnly, Category = "UI")
+	TSubclassOf<UUserWidget> GameWidgetClass;
+
+	UPROPERTY()
+	UUserWidget* GameWidget;
 	
 };

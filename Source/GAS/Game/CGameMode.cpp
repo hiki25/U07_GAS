@@ -52,13 +52,13 @@ void ACGameMode::StartPlay()
 
 void ACGameMode::HandleStartingNewPlayer_Implementation(APlayerController* NewPlayer)
 {
-	Super::HandleStartingNewPlayer_Implementation(NewPlayer);
 
 	ACPlayerState* PS = NewPlayer->GetPlayerState<ACPlayerState>();
 	if (PS)
 	{
 		PS->LoadPlayerState(CurrentSaveGame);
 	}
+	Super::HandleStartingNewPlayer_Implementation(NewPlayer);
 }
 
 void ACGameMode::KillAll()
