@@ -7,6 +7,7 @@
 #include "CAction.generated.h"
 
 class UCActionComponent;
+class UTexture2D;
 
 UCLASS(Blueprintable)
 class GAS_API UCAction : public UObject
@@ -47,12 +48,14 @@ public:
 	UPROPERTY(EditDefaultsOnly, Category = "Action")
 	bool bAutoStart;
 protected:
+	//Gameplay Tag
 	UPROPERTY(EditDefaultsOnly, Category = "GameplayTag")
 	FGameplayTagContainer GrantTags;
 
 	UPROPERTY(EditDefaultsOnly, Category = "GameplayTag")
 	FGameplayTagContainer BlockTags;
 
+	//Replicates
 	UPROPERTY(ReplicatedUsing = "OnRep_IsRunning")
 		FActionRepData RepData;
 
@@ -61,4 +64,11 @@ protected:
 
 	UPROPERTY(Replicated)
 	UCActionComponent* ActionComp;
+
+	UPROPERTY(Replicated)
+	float TimeStarted;
+
+	//Icon
+	UPROPERTY(BlueprintReadOnly, EditDefaultsOnly, Category = "UI")
+	UTexture2D* Icon;
 };

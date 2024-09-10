@@ -90,7 +90,7 @@ void ACGameMode::OnActorKilled(AActor* VictimActor, AActor* Killer)
 	}
 
 	APawn* KillerPawn = Cast<APawn>(Killer);
-	if (KillerPawn)
+	if (KillerPawn && KillerPawn != VictimActor)
 	{
 		ACPlayerState* PS = KillerPawn->GetPlayerState<ACPlayerState>();
 		if (PS)

@@ -30,6 +30,11 @@ void UCAction::StartAction_Implementation(AActor* Instigator)
 
 	RepData.bIsRunning = true;
 	RepData.Instigator = Instigator;
+
+	
+	TimeStarted = GetWorld()->TimeSeconds;
+
+	Comp->OnActionStarted.Broadcast(Comp,this);
 }
 
 void UCAction::StopAction_Implementation(AActor* Instigator)
@@ -41,6 +46,8 @@ void UCAction::StopAction_Implementation(AActor* Instigator)
 
 	RepData.bIsRunning = false;
 	RepData.Instigator = Instigator;
+
+	Comp->OnActionStopped.Broadcast(Comp, this);
 }
 
 
@@ -90,4 +97,5 @@ void UCAction::GetLifetimeReplicatedProps(TArray<class FLifetimeProperty>& OutLi
 
 	DOREPLIFETIME(UCAction, RepData);
 	DOREPLIFETIME(UCAction, ActionComp);
+	//DOREPLIFETIME(float, TimeStarted);
 }

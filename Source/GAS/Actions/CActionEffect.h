@@ -17,6 +17,9 @@ public:
 	void StartAction_Implementation(AActor* Instigator) override;
 	void StopAction_Implementation(AActor* Instigator) override;
 
+	UFUNCTION(BlueprintCallable)
+	float GetRemainTime() const;
+
 protected:
 	UFUNCTION(BlueprintNativeEvent, Category = "Effect")
 	void ExecutePeriodEffect(AActor* Instigator);
