@@ -22,6 +22,10 @@ protected:
 	UPROPERTY(EditAnywhere, Category = "Credits")
 	int32 CreditCost;
 
+	UPROPERTY(EditAnywhere, Category = "Credits")
+		FText WarningMsg;
 
+	UPROPERTY(EditAnywhere, Category = "Credits")
+		FText InteractionMsg;
 	
 };

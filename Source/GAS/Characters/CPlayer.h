@@ -2,6 +2,7 @@
 
 #include "CoreMinimal.h"
 #include "GameFramework/Character.h"
+#include "GameplayTagContainer.h"
 #include "CPlayer.generated.h"
 
 class USpringArmComponent;
@@ -64,11 +65,9 @@ protected:
 	UCActionComponent* ActionComp;
 
 protected:
-
-
-
-
-
 	UPROPERTY(EditAnywhere, Category = "Action")
 		FName TimeToHitParamName;
+
+	UPROPERTY(EditAnywhere, Category = "Action")
+	FGameplayTagContainer LockingMovementTag;
 };

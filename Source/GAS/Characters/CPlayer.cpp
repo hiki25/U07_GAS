@@ -89,20 +89,27 @@ void ACPlayer::OnHealthChanged(AActor* InstigatorActor, UCAttributeComponent* Ow
 
 void ACPlayer::MoveForward(float Value)
 {
+	if (ActionComp && !ActionComp->ActiveGameplayTags.HasAny(LockingMovementTag))
+	{
 	FRotator ControlRot = GetControlRotation();
 	ControlRot.Pitch = ControlRot.Roll = 0.f;
 
 	AddMovementInput(ControlRot.Vector(),Value);
+	}
 }
 
 void ACPlayer::MoveRight(float Value)
 {
+	if (ActionComp && !ActionComp->ActiveGameplayTags.HasAny(LockingMovementTag))
+	{
+
 	FRotator ControlRot = GetControlRotation();
 	ControlRot.Pitch = ControlRot.Roll = 0.f;
 
 	FVector RightVector = FRotationMatrix(ControlRot).GetScaledAxis(EAxis::Y);
 
 	AddMovementInput(RightVector, Value);
+	}
 }
 
 void ACPlayer::PrimaryAction()

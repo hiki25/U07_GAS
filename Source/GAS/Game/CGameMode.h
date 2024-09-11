@@ -3,11 +3,43 @@
 #include "CoreMinimal.h"
 #include "GameFramework/GameModeBase.h"
 #include "Engine.h"
+#include "Engine/DataTable.h"
 #include "EnvironmentQuery/EnvQueryTypes.h"
 #include "CGameMode.generated.h"
 
 class UEnvQuery;
 class UCSaveGame;
+class UCSpawnBotDataAsset;
+
+
+
+USTRUCT(BlueprintType)
+struct FSpawnBotRow : public FTableRowBase
+{
+	GENERATED_BODY()
+
+public:
+	FSpawnBotRow()
+	{
+		weight = 1.f;
+		Cost = 5.f;
+		KillReward = 20.f;
+	}
+
+public:
+
+	UPROPERTY(EditAnywhere, Category = "AI")
+	UCSpawnBotDataAsset* SpawnBotDataAsset;
+
+	UPROPERTY(EditAnywhere, Category = "AI")
+	float weight;
+
+	UPROPERTY(EditAnywhere, Category = "AI")
+	float Cost;
+
+	UPROPERTY(EditAnywhere, Category = "AI")
+	float KillReward;
+};
 
 UCLASS()
 class GAS_API ACGameMode : public AGameModeBase
@@ -39,6 +71,8 @@ public:
 protected:
 	FTimerHandle TimerHandle_SpawnBot;
 
+
+
 	UFUNCTION()
 	void SpawnBotTimerElapsed();
 
@@ -52,11 +86,13 @@ private:
 	UPROPERTY(EditDefaultsOnly, Category = "AI")
 	float SpawnTimerDelay;
 
-	UPROPERTY(EditDefaultsOnly, Category = "AI")
-	TSubclassOf<AActor> BotClass;
 
 	UPROPERTY(EditDefaultsOnly, Category = "AI")
 	UCurveFloat* SpawnCurve;
+
+protected:
+	UPROPERTY(EditDefaultsOnly, Category = "AI")
+		UDataTable* SpawnBotDataTable;
 
 	//Spawn PickUp
 
@@ -88,5 +124,6 @@ public:
 	void WriteSaveGame();
 
 	void LoadSaveGame();
+
 
 };
