@@ -29,7 +29,7 @@ public:
 public:
 
 	UPROPERTY(EditAnywhere, Category = "AI")
-	UCSpawnBotDataAsset* SpawnBotDataAsset;
+	FPrimaryAssetId BotDataAssetID;
 
 	UPROPERTY(EditAnywhere, Category = "AI")
 	float weight;
@@ -71,13 +71,13 @@ public:
 protected:
 	FTimerHandle TimerHandle_SpawnBot;
 
-
-
 	UFUNCTION()
 	void SpawnBotTimerElapsed();
 
 	UFUNCTION()
 		void OnSpawnBotQueryFinished(UEnvQueryInstanceBlueprintWrapper* QueryInstance, EEnvQueryStatus::Type QueryStatus);
+
+	void OnDataAssetLoaded(FPrimaryAssetId PrimaryDataAssetID, FTransform Transform);
 
 private:
 	UPROPERTY(EditDefaultsOnly, Category = "AI")
@@ -111,6 +111,8 @@ protected:
 
 	UFUNCTION()
 	void OnSpawnPickUpQueryFinished(UEnvQueryInstanceBlueprintWrapper* QueryInstance, EEnvQueryStatus::Type QueryStatus);
+
+	
 
 //SaveGame
 protected:

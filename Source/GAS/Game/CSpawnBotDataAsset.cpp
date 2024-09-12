@@ -2,5 +2,10 @@
 
 UCSpawnBotDataAsset::UCSpawnBotDataAsset()
 {
-	BotColor = FLinearColor::White;
+	BotColor = FLinearColor();
+}
+
+FPrimaryAssetId UCSpawnBotDataAsset::GetPrimaryAssetId() const
+{
+	return FPrimaryAssetId(TEXT("Bot"),GetFName());
 }

@@ -70,5 +70,5 @@ protected:
 
 	//Icon
 	UPROPERTY(BlueprintReadOnly, EditDefaultsOnly, Category = "UI")
-	UTexture2D* Icon;
+	TSoftObjectPtr<UTexture2D> Icon;
 };

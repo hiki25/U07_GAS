@@ -1,10 +1,12 @@
 #include "CGameMode.h"
 #include "EngineUtils.h"
+#include "Engine/AssetManager.h"
 #include "GameFramework/GameStateBase.h"
 #include "EnvironmentQuery/EnvQueryManager.h"
 #include "Characters/CBot.h"
 #include "Characters/CPlayer.h"
 #include "Components/CAttributeComponent.h"
+#include "Components/CActionComponent.h"
 #include "DrawDebugHelpers.h"
 #include "CPlayerState.h"
 #include "Kismet/GameplayStatics.h"
@@ -12,8 +14,9 @@
 #include "CSaveGame.h"
 #include "CGameplayInterface.h"
 #include "CSpawnBotDataAsset.h"
+#include "GAS.h"
 
-static TAutoConsoleVariable<bool> CVarSpawnBots(TEXT("Tore.SpawnBots"), false, TEXT("Enable spawn bots via cvar"), ECVF_Cheat);
+static TAutoConsoleVariable<bool> CVarSpawnBots(TEXT("Tore.SpawnBots"), true, TEXT("Enable spawn bots via cvar"), ECVF_Cheat);
 
 ACGameMode::ACGameMode()
 {
@@ -173,13 +176,61 @@ void ACGameMode::OnSpawnBotQueryFinished(UEnvQueryInstanceBlueprintWrapper* Quer
 			TArray<FSpawnBotRow*> Rows;
 			SpawnBotDataTable->GetAllRows("", Rows);
 
-			int32 Random = FMath::RandRange(0, Rows.Num()-1);
+			int32 Random = FMath::RandRange(0, Rows.Num() - 1);
 			FSpawnBotRow* SelectRow = Rows[Random];
 
-			GetWorld()->SpawnActor<AActor>(SelectRow->SpawnBotDataAsset->BotClass, Locations[0],FRotator::ZeroRotator);
+			UAssetManager* AssetManager = UAssetManager::GetIfValid();
+			if (AssetManager)
+			{
+				LogOnScreen(this, "Loading Spawn Bot Data Asset...", FColor::Yellow);
+
+				FTransform Transform;
+				Transform.SetLocation(Locations[0]);
+
+				TArray<FName> Bundles;
+				FStreamableDelegate Delegate = FStreamableDelegate::CreateUObject(this, &ACGameMode::OnDataAssetLoaded, SelectRow->BotDataAssetID, Transform);
+
+				AssetManager->LoadPrimaryAsset(SelectRow->BotDataAssetID, Bundles, Delegate);
+			}
 		}
 	}
 
+}
+
+void ACGameMode::OnDataAssetLoaded(FPrimaryAssetId PrimaryDataAssetID, FTransform Transform)
+{
+	LogOnScreen(this, PrimaryDataAssetID.PrimaryAssetName.ToString() + "Is Loaded", FColor::Blue);
+
+	UAssetManager* AssetManager = UAssetManager::GetIfValid();
+	if (AssetManager)
+	{
+		UCSpawnBotDataAsset* DataAsset = Cast<UCSpawnBotDataAsset>(AssetManager->GetPrimaryAssetObject(PrimaryDataAssetID));
+		if (DataAsset)
+		{
+			AActor* NewActor = GetWorld()->SpawnActorDeferred<AActor>(DataAsset->BotClass, Transform);
+
+			ACBot* NewBot = Cast<ACBot>(NewActor);
+			if (NewBot)
+			{
+				NewBot->SetBodyColor(DataAsset->BotColor);
+
+				UCActionComponent* ActionComp = Cast<UCActionComponent>(NewBot->GetComponentByClass(UCActionComponent::StaticClass()));
+				if (ActionComp)
+				{
+
+					for (TSubclassOf<UCAction> Action : DataAsset->Actions)
+					{
+						ActionComp->AddAction(NewBot, Action);
+					}
+
+				}
+
+				NewBot->FinishSpawning(Transform);
+			}
+		}
+	}
+
+	
 }
 
 

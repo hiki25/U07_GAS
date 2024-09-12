@@ -17,6 +17,8 @@ class GAS_API ACBot : public ACharacter
 public:
 	ACBot();
 
+	void SetBodyColor(FLinearColor InColor);
+
 protected:
 	virtual void PostInitializeComponents() override;
 

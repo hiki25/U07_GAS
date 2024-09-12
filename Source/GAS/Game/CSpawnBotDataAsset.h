@@ -15,6 +15,9 @@ public:
 	UCSpawnBotDataAsset();
 
 public:
+	virtual FPrimaryAssetId GetPrimaryAssetId() const override;
+
+public:
 	UPROPERTY(BlueprintReadOnly, EditDefaultsOnly, Category = "Spawn")
 	TSubclassOf<AActor> BotClass;
 
@@ -23,5 +26,4 @@ public:
 
 	UPROPERTY(BlueprintReadOnly, EditDefaultsOnly, Category = "Spawn")
 	FLinearColor BotColor;
-	
 };
