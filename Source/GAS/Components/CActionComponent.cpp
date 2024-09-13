@@ -5,6 +5,8 @@
 #include "Engine/ActorChannel.h"
 #include "GAS.h"
 
+DECLARE_CYCLE_STAT(TEXT("StarteActionByName"), STAT_StartActionByName,STATGROUP_TORE);
+
 UCActionComponent::UCActionComponent()
 {
 	PrimaryComponentTick.bCanEverTick = true;
@@ -108,6 +110,8 @@ void UCActionComponent::RemoveAction(UCAction* ActionToRemove)
 
 bool UCActionComponent::StartActionByName(AActor* Instigator, FName ActionName)
 {
+	SCOPE_CYCLE_COUNTER(STAT_StartActionByName);
+
 	for (UCAction* Action : Actions)
 	{
 		if (Action && Action->ActionName == ActionName)
@@ -123,7 +127,13 @@ bool UCActionComponent::StartActionByName(AActor* Instigator, FName ActionName)
 				ServerStartAction(Instigator, ActionName);
 			}
 
+			TRACE_BOOKMARK(TEXT("StartACtion : %s"), *GetNameSafe(Action));
+			{
 			Action->StartAction(Instigator);
+			SCOPED_NAMED_EVENT_FSTRING(Action->GetClass()->GetName(), FColor::White);
+			}
+
+
 			return true;
 
 		}

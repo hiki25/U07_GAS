@@ -14,7 +14,6 @@ ACMagicBall::ACMagicBall()
 void ACMagicBall::BeginPlay()
 {
 	SphereComp->OnComponentBeginOverlap.AddDynamic(this, &ACMagicBall::OnActorOverlap);
-
 	Super::BeginPlay();
 }
 
